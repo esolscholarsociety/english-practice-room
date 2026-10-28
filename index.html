@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>English Practice Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: one narrow answer-sheet column, ruled boxes, lettered answer bubbles, strict black and white. */
+:root{
+  --bg:#ffffff; --fg:#000000; --mute:#3a3a3a; --soft:#eeeeee; --rule:#000000;
+  --display:'Archivo','Arial Black','Segoe UI',system-ui,sans-serif;
+  --body:'Atkinson Hyperlegible','Segoe UI',Verdana,system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#000000; --fg:#ffffff; --mute:#d2d2d2; --soft:#1a1a1a; --rule:#ffffff; color-scheme:dark; }
+}
+:root[data-theme="dark"]{ --bg:#000000; --fg:#ffffff; --mute:#d2d2d2; --soft:#1a1a1a; --rule:#ffffff; color-scheme:dark; }
+
+*{box-sizing:border-box}
+html{font-size:112.5%;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.6;min-height:100vh}
+.wrap{max-width:56rem;margin:0 auto;padding:0 1rem}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.15;text-wrap:balance;margin:0 0 .6rem}
+h1{font-size:clamp(1.8rem,6vw,2.5rem);font-weight:800;letter-spacing:-.01em}
+h2{font-size:clamp(1.5rem,5vw,2rem);font-weight:800;margin-top:1.2rem}
+h3{font-size:1.2rem;font-weight:700}
+h4{font-size:1rem;font-weight:700;margin-top:1rem}
+p{margin:.5rem 0}
+a{color:inherit}
+button,select,textarea,input{font:inherit;color:inherit}
+:focus-visible,.opt:focus-within{outline:3px solid var(--fg);outline-offset:3px;box-shadow:0 0 0 6px var(--bg)}
+.skip{position:absolute;left:-999px;top:0;background:var(--fg);color:var(--bg);padding:.6rem 1rem;z-index:30;font-weight:700}
+.skip:focus{left:0}
+[hidden]{display:none!important}
+.mute{color:var(--mute)}
+.big{font-size:1.2rem}
+.en{display:inline}
+.tr{display:block;font-size:.8em;font-weight:400;font-style:italic;color:inherit;line-height:1.35}
+.tr[hidden]{display:none!important}
+.plain{margin:.3rem 0;padding-left:1.2rem}
+
+/* header */
+.disc{background:var(--fg);color:var(--bg);padding:.55rem 0;font-size:.92rem;line-height:1.4}
+.top{display:flex;flex-wrap:wrap;gap:.8rem 1.2rem;align-items:flex-end;justify-content:space-between;padding-top:1rem;padding-bottom:.4rem}
+.brand .sub{margin:0;color:var(--mute);font-weight:700}
+.tools{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+.langbox{display:flex;flex-direction:column;font-weight:700;font-size:.9rem}
+.sel{min-height:3rem;border:2px solid var(--fg);border-radius:6px;background:var(--bg);padding:.3rem .6rem;font-weight:700}
+.note{border:2px dashed var(--fg);border-radius:6px;padding:.5rem .8rem;margin:.6rem 0;font-weight:700}
+nav ul{list-style:none;display:flex;flex-wrap:wrap;gap:.4rem;padding:0;margin:.7rem 0}
+.navb{min-height:2.7rem;padding:.25rem .75rem;border:2px solid var(--fg);background:var(--bg);color:var(--fg);font-weight:700;border-radius:6px;cursor:pointer}
+.navb:hover{background:var(--soft)}
+.navb[aria-current="page"]{background:var(--fg);color:var(--bg)}
+.navb .tr{font-size:.7em}
+.lvlrow{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:.3rem 0 1rem}
+.lvlrow .lg{font-weight:700;margin-right:.3rem}
+.seg{position:relative;display:inline-block}
+.seg input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.seg span.s{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:3rem;padding:.3rem 1rem;border:2px solid var(--fg);border-radius:6px;font-weight:700;background:var(--bg)}
+.seg input:checked + span.s{background:var(--fg);color:var(--bg)}
+.seg input:focus-visible + span.s{outline:3px solid var(--fg);outline-offset:3px;box-shadow:0 0 0 6px var(--bg)}
+.seg input:disabled + span.s{border-style:dashed;cursor:not-allowed}
+
+main{padding-bottom:3rem;outline:none}
+[tabindex="-1"]:focus{outline:none;box-shadow:none}
+footer{border-top:3px solid var(--fg);margin-top:2rem;padding:1rem 0 2.5rem;font-size:.92rem;color:var(--mute)}
+
+/* controls */
+.btn{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-height:3rem;padding:.5rem 1.1rem;border:2px solid var(--fg);background:var(--bg);color:var(--fg);border-radius:6px;font-weight:700;cursor:pointer;text-align:center;text-decoration:none}
+.btn:hover{background:var(--fg);color:var(--bg)}
+.btn.primary{background:var(--fg);color:var(--bg)}
+.btn.primary:hover{background:var(--bg);color:var(--fg)}
+.btn[disabled]{border-style:dashed;cursor:not-allowed;opacity:.65}
+.btn[disabled]:hover{background:var(--bg);color:var(--fg)}
+.btn.primary[disabled]:hover{background:var(--fg);color:var(--bg)}
+.row{display:flex;flex-wrap:wrap;gap:.7rem;align-items:center;margin:.7rem 0}
+.spread{justify-content:space-between}
+
+/* cards */
+.card{border:2px solid var(--fg);border-radius:8px;padding:1rem 1.1rem;margin:1rem 0;background:var(--bg)}
+.card h3{margin-bottom:.3rem}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(15.5rem,1fr));gap:1rem;margin:1rem 0}
+.tile{display:flex;flex-direction:column;align-items:flex-start;gap:.35rem;text-align:left;padding:1rem;border:2px solid var(--fg);border-radius:8px;background:var(--bg);color:var(--fg);cursor:pointer;min-height:8.5rem}
+.tile:hover{background:var(--fg);color:var(--bg)}
+.tile .mark{width:2.6rem;height:2.6rem;border:2px solid currentColor;border-radius:6px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:1.3rem}
+.tile .tt{font-family:var(--display);font-weight:800;font-size:1.25rem;line-height:1.2}
+.tile .td{font-size:.95rem}
+.lvlbadge{display:inline-block;border:2px solid var(--fg);border-radius:20px;padding:0 .8rem;font-weight:700;margin:.2rem 0 .6rem}
+.lvlbadge .tr{display:inline;margin-left:.3rem}
+
+/* passages and questions */
+.sticky{position:sticky;top:0;background:var(--bg);border-bottom:3px solid var(--fg);padding:.5rem 0;z-index:5;margin-top:.5rem}
+.timer{font-family:var(--display);font-weight:800;font-size:1.35rem;font-variant-numeric:tabular-nums;border:2px solid var(--fg);border-radius:6px;padding:.05rem .6rem;margin-left:.3rem}
+.passage{border-left:6px solid var(--fg);padding-left:1rem;margin:.8rem 0;font-size:1.12rem}
+.para{display:grid;grid-template-columns:1.9rem 1fr;gap:.6rem;margin:.7rem 0}
+.para p{margin:0}
+.para.un{display:block;font-style:italic}
+.pn{font-family:var(--display);font-weight:800;font-size:.8rem;border:2px solid var(--fg);width:1.7rem;height:1.7rem;display:grid;place-items:center;border-radius:4px;margin-top:.25rem}
+fieldset.q{border:0;border-top:2px solid var(--fg);padding:1rem 0 0;margin:1.2rem 0 0;min-width:0}
+fieldset.q legend{font-weight:700;font-size:1.12rem;padding:0 .4rem 0 0;margin-bottom:.4rem;float:left;width:100%}
+fieldset.q legend + *{clear:both}
+.tag{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;border:1.5px solid var(--fg);border-radius:4px;padding:0 .35rem;margin-right:.5rem;font-weight:700;vertical-align:middle;display:inline-block}
+.opt{position:relative;display:flex;gap:.8rem;align-items:flex-start;border:2px solid var(--fg);border-radius:8px;padding:.65rem .9rem;margin:.5rem 0;cursor:pointer;background:var(--bg);clear:both}
+.opt input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.bub{flex:none;width:2rem;height:2rem;border:2px solid var(--fg);border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.95rem;font-family:var(--display)}
+.otext{flex:1;padding-top:.1rem}
+.opt:hover{background:var(--soft)}
+.opt.sel{outline:3px solid var(--fg);outline-offset:-2px}
+.opt.sel .bub{background:var(--fg);color:var(--bg)}
+.opt.locked{cursor:default}
+.opt.right{outline:4px solid var(--fg);outline-offset:-3px}
+.opt.right .bub{background:var(--fg);color:var(--bg)}
+.opt.wrongpick{border-style:dashed}
+.badge{flex:none;font-weight:700;font-size:.85rem;border:2px solid var(--fg);border-radius:4px;padding:0 .4rem;align-self:center}
+.fb{font-weight:700;margin:.4rem 0 0;min-height:1.4rem}
+
+.meter{height:1.1rem;border:2px solid var(--fg);border-radius:4px;background:var(--bg);overflow:hidden}
+.meter>i{display:block;height:100%;background:var(--fg)}
+.bignum{font-family:var(--display);font-weight:800;font-size:2.4rem;margin:.2rem 0}
+.bignum span{font-size:1.2rem}
+.chip{display:inline-block;border:2px dashed var(--fg);border-radius:20px;padding:0 .7rem;margin:.15rem .2rem .15rem 0;font-weight:700}
+.chip.ok{border-style:solid}
+.fbox{border:2px solid var(--fg);border-radius:8px;padding:.8rem 1rem;margin:.8rem 0;background:var(--soft)}
+.rough{border:3px double var(--fg);border-radius:8px;padding:.6rem 1rem;margin:.8rem 0;font-weight:700}
+
+/* writing and speaking */
+.lbl{display:block;font-weight:700;margin:.8rem 0 .3rem}
+.ta{width:100%;min-height:13rem;border:2px solid var(--fg);border-radius:8px;padding:.8rem;background:var(--bg);font-size:1.12rem;line-height:1.6;resize:vertical}
+.ta.short{min-height:6.5rem}
+.ck{list-style:none;padding:0;margin:.3rem 0}
+.ck li{border-top:2px solid var(--fg);padding:.55rem 0}
+.ck li:first-child{border-top:0}
+.ck label{display:flex;gap:.7rem;align-items:flex-start;cursor:pointer}
+.ck input[type=checkbox]{width:1.5rem;height:1.5rem;flex:none;margin-top:.2rem;accent-color:var(--fg)}
+.st{display:inline-block;min-width:5.2rem;font-weight:700;border:2px solid var(--fg);border-radius:4px;text-align:center;padding:0 .3rem;margin-right:.5rem;font-size:.9rem}
+.st.done{background:var(--fg);color:var(--bg)}
+.script{border:2px dashed var(--fg);border-radius:8px;padding:.6rem 1rem;margin:1rem 0}
+.script summary{font-weight:700;cursor:pointer}
+.script[hidden]{display:none}
+
+/* flashcards */
+.fcard{width:100%;min-height:15rem;border:3px solid var(--fg);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:1.2rem;text-align:center;background:var(--bg);color:var(--fg);cursor:pointer}
+.fcard.back{background:var(--fg);color:var(--bg)}
+.fcard .fw{font-family:var(--display);font-weight:800;font-size:clamp(2rem,9vw,3rem);line-height:1.1}
+.fcard .hint{font-size:.9rem}
+.vopt{display:flex;width:100%;text-align:left;gap:.8rem;align-items:flex-start;border:2px solid var(--fg);border-radius:8px;padding:.65rem .9rem;margin:.5rem 0;background:var(--bg);color:var(--fg);cursor:pointer}
+.vopt:hover{background:var(--soft)}
+.vopt.right{outline:4px solid var(--fg);outline-offset:-3px}
+.vopt.wrongpick{border-style:dashed}
+.vopt[disabled]{cursor:default}
+.grid2{display:grid;grid-template-columns:auto 1fr;gap:.6rem 1rem;align-items:center}
+.steps{padding-left:1.4rem}
+.steps li{margin:.25rem 0}
+.mock{border:2px dashed var(--fg);border-radius:8px;padding:.7rem 1rem;margin:.8rem 0}
+table.t{border-collapse:collapse;width:100%}
+table.t th,table.t td{border:2px solid var(--fg);padding:.4rem .6rem;text-align:left}
+.tw{overflow-x:auto}
+@media (max-width:30rem){
+  html{font-size:106%}
+  .navb{font-size:.88rem;padding:.2rem .55rem;min-height:2.5rem}
+  .lvlrow .lg{flex-basis:100%;margin:0}
+  .seg{flex:1 1 auto}
+  .seg span.s{padding:.3rem .5rem;font-size:.92rem;text-align:center}
+  .langbox{flex:1 1 auto}
+  .grid2{grid-template-columns:1fr}
+  .btn{flex:1 1 auto}
+}
+@media (prefers-reduced-motion: reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#app">Skip to main content</a>
+<header>
+  <div class="disc" role="note"><div class="wrap" id="disc"></div></div>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand"><h1 id="brand"></h1><p class="sub" id="subt"></p></div>
+      <div class="tools">
+        <button class="btn" id="trBtn" aria-pressed="false" type="button"></button>
+        <label class="langbox" id="langBox" hidden><span id="langLbl"></span><select class="sel" id="trLang"></select></label>
+      </div>
+    </div>
+    <p class="note" id="trNote" role="note" hidden></p>
+    <nav aria-label="Main"><ul id="nav"></ul></nav>
+    <div class="lvlrow" role="radiogroup" aria-labelledby="lg">
+      <span class="lg" id="lg"></span>
+      <label class="seg"><input type="radio" name="lvl" value="b"><span class="s" id="lb"></span></label>
+      <label class="seg"><input type="radio" name="lvl" value="a"><span class="s" id="la"></span></label>
+    </div>
+  </div>
+</header>
+<main class="wrap" id="app" tabindex="-1"><noscript>This practice app needs JavaScript.</noscript></main>
+<footer><div class="wrap">
+  <p><strong>Independent practice tool. Not an official WIDA product.</strong> It was not made, reviewed, or endorsed by WIDA. “WIDA” and “ACCESS” belong to their owners and are used here only to describe the kind of practice. Every passage, audio script, question, and prompt in this app was written for this app. Results are practice numbers, not WIDA scores or proficiency levels.</p>
+  <p>Translations (Korean, Vietnamese, Spanish, Japanese) are drafts and need review by a native speaker.</p>
+</div></footer>
+<script>
+/* ===== Original practice items. In every question the FIRST option is the correct one; options are shuffled when shown. ===== */
+const READING = {
+b: [
+ { id:"rb1", title:"The Lunch Survey", topic:"School life", text:[
+  "Last month, the student council asked 120 students one question: “What would make lunch better?” The council counted the answers. Forty-eight students wanted more time to eat. Thirty-six students wanted healthier food, such as fruit and salad. Twenty-four students wanted a quieter room, and twelve students had other ideas.",
+  "The principal read the results and made two changes. First, lunch will be five minutes longer starting in November. Second, the cafeteria will add a fruit bar every Tuesday and Thursday. The student council will ask the same question again in January to see if students are happier.",
+  "“We wanted every voice to count,” said council president Marisol. “A survey is a fair way to listen.”"],
+  qs:[
+  {k:"Main idea", q:"Why did the student council ask students a question?", o:["To find out how students want lunch to be better","To choose a new principal","To plan a school trip","To sell fruit and salad"]},
+  {k:"Detail", q:"How many students wanted healthier food?", o:["36","12","24","48"]},
+  {k:"Detail", q:"What will happen every Tuesday and Thursday?", o:["The cafeteria will have a fruit bar.","Lunch will be five minutes longer.","The council will ask a new question.","The room will be quieter."]},
+  {k:"Word in context", q:"In paragraph 3, the phrase “every voice to count” means that —", o:["every student's opinion is important","every student should speak loudly","every student should count to ten","every student must join the council"]}
+ ]},
+ { id:"rb2", title:"Why Leaves Change Color", topic:"Science", text:[
+  "In summer, leaves are green because they contain chlorophyll. Chlorophyll helps a plant use sunlight to make food. This process is called photosynthesis.",
+  "In autumn, the days become shorter and the weather gets cooler. There is less sunlight, so the tree stops making chlorophyll. The green color slowly disappears. Then other colors, which were in the leaf all summer, become easy to see. Some leaves turn yellow or orange. Others turn red or brown.",
+  "Scientists say that temperature and rain also change how bright the colors are. A sunny autumn with cool nights often makes the brightest red leaves."],
+  qs:[
+  {k:"Detail", q:"Why are leaves green in summer?", o:["They contain chlorophyll.","They get less sunlight.","The weather is cool.","They make red color."]},
+  {k:"Cause and effect", q:"What happens when there is less sunlight in autumn?", o:["The tree stops making chlorophyll.","The tree makes more food.","The leaves grow bigger.","The days become longer."]},
+  {k:"Detail", q:"Which sentence is true according to the passage?", o:["Yellow and orange colors are in the leaf during summer.","Leaves make yellow color only in winter.","Rain turns leaves green.","Photosynthesis happens in the dark."]},
+  {k:"Main idea", q:"What is the passage mostly about?", o:["Why leaves change color in autumn","How to grow a tree","Why summer is hot","How plants drink water"]}
+ ]},
+ { id:"rb3", title:"The Printing Press", topic:"Social studies", text:[
+  "Before the 1400s, most books in Europe were copied by hand. One book could take months to finish, so books were rare and expensive. Only rich people and religious leaders owned many books.",
+  "Around 1440, a German man named Johannes Gutenberg built a printing press with movable metal letters. Workers placed the letters in a frame, covered them with ink, and pressed them onto paper. The same letters could be used again and again.",
+  "Books became cheaper and faster to make. More people learned to read, and new ideas traveled quickly. Many historians say the printing press changed the world because it helped knowledge reach ordinary people."],
+  qs:[
+  {k:"Detail", q:"Why were books expensive before the 1400s?", o:["People copied them by hand, and it took months.","There was no paper in Europe.","Only religious leaders could write.","Books were made of metal."]},
+  {k:"Detail", q:"What was special about Gutenberg's metal letters?", o:["They could be moved and used again.","They were very large.","They were made of paper.","They could not hold ink."]},
+  {k:"Cause and effect", q:"What happened after books became cheaper?", o:["More people learned to read.","Fewer people bought books.","Rich people stopped reading.","Ideas traveled more slowly."]},
+  {k:"Word in context", q:"In paragraph 1, the word “rare” means —", o:["not easy to find","very old","heavy","free"]}
+ ]},
+ { id:"rb4", title:"A Letter to Grandma", topic:"Language arts", text:[
+  "~Dear Grandma,",
+  "I am writing from my new school in Georgia. The first week was difficult. I did not understand everything my teachers said, and I was too nervous to raise my hand. At lunch, I sat alone and ate quickly.",
+  "Yesterday, something changed. A girl named Amara asked about my lunch box. I showed her your recipe for dumplings, and she asked if she could try one. She said it was the best thing she had eaten all week! Now we sit together every day. She teaches me new English words, and I teach her words from our language.",
+  "I miss you very much, but I feel braver now. I will write again soon.",
+  "~Love, Min"],
+  qs:[
+  {k:"Detail", q:"How did Min feel during the first week?", o:["Nervous and alone","Excited and loud","Angry at the teachers","Bored in class"]},
+  {k:"Cause and effect", q:"What helped Min make a new friend?", o:["Amara asked about Min's lunch.","Min raised a hand in class.","Min sat near the teacher.","Min wrote a letter to Amara."]},
+  {k:"Inference", q:"What can the reader tell about Amara?", o:["She is friendly and curious.","She does not like new food.","She is afraid of Min.","She has been at the school for one day."]},
+  {k:"Inference", q:"What does “I feel braver now” show?", o:["Min is less afraid than before.","Min wants to move home.","Min is angry at Grandma.","Min has finished school."]}
+ ]}
+],
+a: [
+ { id:"ra1", title:"Why Cities Are Hotter", topic:"Science", text:[
+  "On a summer afternoon, the temperature in a crowded city can be several degrees higher than in the farmland just outside it. Scientists call this difference the urban heat island effect, and it has become a major concern as more people move to cities.",
+  "Several factors cause the effect. Asphalt roads and dark roofs absorb sunlight instead of reflecting it, and they release that stored heat slowly after sunset. Tall buildings block breezes that would otherwise carry warm air away. In addition, cities have fewer trees and less open soil, which means less shade and less evaporation. Evaporation matters because it cools the air, much as sweating cools the human body. Finally, air conditioners, cars, and factories release extra heat directly into the streets.",
+  "Planners are testing practical solutions. Some cities paint roofs white or plant gardens on top of buildings, which reflect sunlight or cool the air through evaporation. Others plant trees along streets to provide shade. Although these changes require investment, early studies suggest they can lower neighborhood temperatures by a few degrees and reduce the cost of cooling buildings."],
+  qs:[
+  {k:"Main idea", q:"Which statement best summarizes the passage?", o:["Cities are warmer than nearby rural areas for several reasons, and planners are testing ways to cool them.","Farmland is always cooler than forests.","Air conditioners are the only cause of hot cities.","Cities should be built without any buildings."]},
+  {k:"Detail", q:"According to paragraph 2, how do tall buildings add to the heat?", o:["They stop breezes from carrying warm air away.","They release heat from air conditioners.","They create more shade for roads.","They reflect sunlight into space."]},
+  {k:"Word in context", q:"In paragraph 2, the word “release” most nearly means —", o:["give off","hold back","measure","purchase"]},
+  {k:"Author's purpose", q:"Why does the author compare evaporation to sweating?", o:["To help readers understand how evaporation cools the air","To prove that humans make cities hot","To show that trees can sweat","To explain why people move to cities"]},
+  {k:"Inference", q:"Which idea would the author most likely agree with?", o:["Planting street trees could help lower city temperatures.","Cooling projects will never be worth the cost.","Dark roofs are the best way to cool a building.","City temperatures cannot be changed."]}
+ ]},
+ { id:"ra2", title:"Small Loans, Big Questions", topic:"Social studies", text:[
+  "For many people in low-income communities, starting a business is nearly impossible. Traditional banks usually ask for property or savings as security, and these borrowers have neither. Microfinance programs try to solve this problem by offering very small loans, sometimes only fifty or one hundred dollars, to entrepreneurs who would otherwise be turned away.",
+  "A typical borrower might be a woman who sells vegetables at a market. With a small loan, she can buy a cart and larger amounts of produce, earn more each week, and repay the loan in small installments. Many programs lend to groups, so that members encourage one another to repay on time.",
+  "Supporters argue that microloans give families a path out of poverty. However, critics point out that research results are mixed. Some borrowers earn more, but others fall into debt when their businesses fail or when interest rates are high. As a result, many economists now suggest that microloans work best as one tool among many, alongside education, savings accounts, and healthcare."],
+  qs:[
+  {k:"Detail", q:"Why do traditional banks often refuse to lend to these entrepreneurs?", o:["The borrowers have no property or savings as security.","The borrowers want loans that are too large.","The borrowers live in cities.","The borrowers already own businesses."]},
+  {k:"Detail", q:"According to paragraph 2, why do many programs lend to groups?", o:["Members encourage one another to repay on time.","Groups need larger carts.","Banks prefer to lend to groups of men.","Groups pay higher interest."]},
+  {k:"Word in context", q:"In paragraph 3, “mixed” means that the results are —", o:["both positive and negative","confusing because of mistakes","completely successful","taken from several countries"]},
+  {k:"Conclusion", q:"Which statement best expresses the author's conclusion?", o:["Microloans can help some people, but they should not be the only solution.","Microloans have failed and should end.","Banks should stop offering loans.","Only groups should receive loans."]}
+ ]},
+ { id:"ra3", title:"Percent Change in Practice", topic:"Math", text:[
+  "A school store sold 80 water bottles in September and 100 bottles in October. To describe how much sales grew, a student can calculate the percent change. First, subtract the old value from the new value: 100 − 80 = 20. Next, divide the difference by the original value: 20 ÷ 80 = 0.25. Finally, multiply by 100 to write the answer as a percent: 25%. Sales increased by 25 percent.",
+  "Percent change can also describe a decrease. In November, the store sold 75 bottles. Compared with October's 100 bottles, that is 25 fewer bottles. Because the original value is now 100, the calculation is 25 ÷ 100 = 0.25, or 25%. Sales decreased by 25 percent.",
+  "Notice that the increase and the decrease are both 25%, yet sales did not return to 80. This happens because each percent change is based on a different starting value. When you read statistics in the news, always ask what the percent is based on."],
+  qs:[
+  {k:"Detail", q:"What is the first step in finding a percent change?", o:["Subtract the old value from the new value.","Multiply the old value by 100.","Divide the new value by 80.","Add the two values together."]},
+  {k:"Detail", q:"By what percent did sales change from October to November?", o:["They decreased by 25 percent.","They increased by 25 percent.","They decreased by 20 percent.","They did not change."]},
+  {k:"Inference", q:"Why did sales not return to 80 after a 25 percent decrease?", o:["The decrease was based on 100, not on 80.","The store stopped selling bottles.","The calculation was wrong.","Percent changes cannot be compared."]},
+  {k:"Application", q:"Suppose sales rise 20 percent from November's 75 bottles. How many bottles are sold in December?", o:["90","80","95","100"]}
+ ]},
+ { id:"ra4", title:"The Science Fair", topic:"Language arts", text:[
+  "The morning of the regional science fair, Dalia checked her model one last time. The tiny wind turbine spun smoothly, and the bulb at its base glowed steady and bright. She tightened a single screw that seemed a little loose, then shrugged and left the table to find the judges.",
+  "By noon, a crowd had gathered. Her best friend Tomas pushed through to the front. “It's incredible,” he said. “Did you test it with the big fan?” Dalia hesitated. She had tested it only with a small desk fan, because the school's large fan had been broken for weeks. “It'll be fine,” she answered, and turned the switch.",
+  "The blades began to turn faster. Somewhere inside the base, a faint clicking sound started, so quiet that only Dalia noticed. She glanced at the loose screw from the morning. Then she smiled at the judges and began to explain her design as the clicking grew louder."],
+  qs:[
+  {k:"Foreshadowing", q:"Which detail in paragraph 1 hints at later trouble?", o:["The screw that seemed a little loose","The bulb glowing bright","The small size of the model","Dalia leaving to find the judges"]},
+  {k:"Inference", q:"Why does Dalia hesitate when Tomas asks about the big fan?", o:["She has not tested the turbine in strong wind.","She does not know who Tomas is.","She wants to break the fan.","She forgot to bring the turbine."]},
+  {k:"Effect", q:"What effect does the clicking sound create at the end?", o:["It builds suspense about what will happen.","It makes the story funny.","It shows the judges are bored.","It explains how turbines work."]},
+  {k:"Prediction", q:"What will most likely happen next?", o:["The turbine will fail during the presentation.","Tomas will win the science fair.","The judges will leave early.","Dalia will fix the screw calmly."]}
+ ]}
+]};
+
+const LISTEN = {
+b: [
+ { id:"lb1", title:"Winter Concert Announcement", topic:"School life", lines:[
+  {s:"Announcer", t:"Good morning, students. This is an announcement from the main office. The winter concert will be on Friday, December fifth, at six thirty in the evening. It will be in the auditorium, not the gym. Student tickets cost three dollars. You can buy tickets at the front office during lunch. Please remember that the doors open at six o'clock. Thank you, and have a great day."}],
+  qs:[
+  {k:"Detail", q:"Where will the winter concert be?", o:["In the auditorium","In the gym","In the cafeteria","In the library"]},
+  {k:"Detail", q:"How much does a student ticket cost?", o:["Three dollars","Five dollars","Six dollars","Thirty dollars"]},
+  {k:"Detail", q:"When can students buy tickets?", o:["During lunch at the front office","At the door only","After school in the gym","On Friday morning"]}
+ ]},
+ { id:"lb2", title:"The Plant Experiment", topic:"Science", lines:[
+  {s:"Lena", t:"Hi Ben! Did you finish the plant experiment?"},
+  {s:"Ben", t:"Almost. I measured the plants on Monday. The plant by the window grew four centimeters."},
+  {s:"Lena", t:"Only four? Mine grew six."},
+  {s:"Ben", t:"Maybe your plant got more water. I watered mine only twice."},
+  {s:"Lena", t:"I watered mine every other day. Let's write that in our report."},
+  {s:"Ben", t:"Good idea. We should also make a chart. Can you bring colored pencils tomorrow?"},
+  {s:"Lena", t:"Sure. I'll put them in my backpack tonight."}],
+  qs:[
+  {k:"Detail", q:"How much did Ben's plant grow?", o:["Four centimeters","Six centimeters","Two centimeters","Ten centimeters"]},
+  {k:"Detail", q:"What do they decide to write in the report?", o:["How often each plant was watered","Which plant was prettier","Where they bought the plants","Who finished first"]},
+  {k:"Detail", q:"What will Lena bring tomorrow?", o:["Colored pencils","A chart","Another plant","A watering can"]}
+ ]},
+ { id:"lb3", title:"Lab Safety", topic:"Science", lines:[
+  {s:"Teacher", t:"Before we start the experiment, let's review three safety rules. First, always wear goggles to protect your eyes. Second, tie back long hair so it stays away from the burner. Third, never taste or smell chemicals unless I tell you to. If something spills, raise your hand and stay calm. I will help you clean it. Now, please get your goggles and sit at your lab tables."}],
+  qs:[
+  {k:"Detail", q:"Why should students wear goggles?", o:["To protect their eyes","To see the burner better","To keep their hair back","To avoid smelling chemicals"]},
+  {k:"Detail", q:"What should students do if something spills?", o:["Raise a hand and stay calm","Clean it up quickly alone","Leave the room","Smell it to check"]},
+  {k:"Detail", q:"What will the students do next?", o:["Get their goggles and sit at the lab tables","Taste the chemicals","Tie back the burner","Go to the library"]}
+ ]},
+ { id:"lb4", title:"Solving a Community Problem", topic:"Social studies", lines:[
+  {s:"Teacher", t:"Today we will talk about how a community can solve a problem. Imagine that many students walk to school, but the street near the school has no crosswalk. It is not safe. First, the students can collect signatures from their neighbors. Next, they can speak at the city council meeting. Finally, the council votes on whether to build a crosswalk. This example shows that citizens can make change by working together."}],
+  qs:[
+  {k:"Detail", q:"What problem does the teacher describe?", o:["There is no crosswalk near the school.","The school bus is late.","Students need more homework.","The park is closed."]},
+  {k:"Sequence", q:"What is the first step the students can take?", o:["Collect signatures from neighbors","Vote at the council meeting","Build the crosswalk","Write a news story"]},
+  {k:"Main idea", q:"What is the main message?", o:["Citizens can make change by working together.","Students should not walk to school.","City councils never listen.","Only adults can solve problems."]}
+ ]}
+],
+a: [
+ { id:"la1", title:"How Tides Work", topic:"Science", lines:[
+  {s:"Teacher", t:"Tides are the regular rise and fall of the ocean's surface. They are caused mainly by the Moon's gravity, which pulls on the water facing it and creates a bulge. A second bulge forms on the opposite side of Earth. As the planet rotates, a coastal area passes through both bulges each day, so most places experience two high tides and two low tides in about twenty-five hours. The Sun also affects tides. When the Sun, Moon, and Earth line up, during new moon and full moon, their combined pull produces especially large tides called spring tides. Despite the name, they have nothing to do with the season."}],
+  qs:[
+  {k:"Main idea", q:"According to the speaker, what mainly causes tides?", o:["The Moon's gravity","Wind over the ocean","Earth's seasons","The Sun's heat"]},
+  {k:"Detail", q:"How many high tides do most coastal places have each day?", o:["Two","One","Three","Four"]},
+  {k:"Detail", q:"When do spring tides happen?", o:["When the Sun, Moon, and Earth line up","When the Moon is hidden by clouds","When the ocean is very warm","When Earth stops rotating"]},
+  {k:"Detail", q:"What does the speaker say about the name “spring tides”?", o:["It is not related to the season.","They only happen in spring.","They are the smallest tides.","They happen when the Moon is far away."]}
+ ]},
+ { id:"la2", title:"Should School Start Later?", topic:"School life", lines:[
+  {s:"Teacher", t:"Today's topic is whether our school should start an hour later. Priya, you support the change. What is your main argument?"},
+  {s:"Priya", t:"Research shows that teenagers naturally fall asleep later at night, so early classes leave many of us exhausted. Some schools that moved their start times reported better attendance and higher grades."},
+  {s:"Teacher", t:"But some people worry about after-school activities. Practices might end after dark."},
+  {s:"Priya", t:"That is a fair concern. However, a later start could be combined with a shorter lunch period, so the day would not end much later. I think the benefits of more sleep outweigh the inconvenience."},
+  {s:"Teacher", t:"Thank you, Priya. Next, we will hear from the opposing side."}],
+  qs:[
+  {k:"Main idea", q:"What is Priya's main reason for supporting a later start time?", o:["Teenagers fall asleep later, so early classes make them tired.","Lunch is too short.","Practices are too long.","Classes are too easy."]},
+  {k:"Detail", q:"What concern does the teacher mention?", o:["Practices might end after dark.","Students might miss lunch.","Buses might arrive early.","Grades might go down."]},
+  {k:"Inference", q:"How does Priya respond to the concern?", o:["She suggests a shorter lunch period.","She says the concern is not important.","She asks for shorter practices.","She changes her opinion."]}
+ ]},
+ { id:"la3", title:"The Silk Road", topic:"Social studies", lines:[
+  {s:"Teacher", t:"For centuries, merchants carried goods along a network of trade routes known as the Silk Road. Despite its name, silk was only one of many products. Traders also exchanged spices, metals, glass, and paper. But goods were not the only things that moved along the routes. Ideas, religions, and technologies traveled too. For instance, the knowledge of papermaking gradually spread westward, which eventually changed how people kept records. Historians often describe the Silk Road not as a single road, but as many connected paths that linked distant societies."}],
+  qs:[
+  {k:"Detail", q:"What does the speaker say about silk?", o:["It was only one of many traded goods.","It was the only product traded.","It was not valuable.","It was invented on the route."]},
+  {k:"Detail", q:"Besides goods, what else traveled along the routes?", o:["Ideas, religions, and technologies","Armies only","Animals only","Weather reports"]},
+  {k:"Detail", q:"Which technology does the speaker give as an example?", o:["Papermaking","Shipbuilding","Computer science","Bridge building"]},
+  {k:"Main idea", q:"How do historians often describe the Silk Road?", o:["As many connected paths","As one straight road","As a river","As a modern highway"]}
+ ]},
+ { id:"la4", title:"How Compound Interest Grows", topic:"Math", lines:[
+  {s:"Teacher", t:"Suppose you deposit one hundred dollars in an account that pays ten percent interest each year. After the first year, you earn ten dollars, so your balance is one hundred ten dollars. In the second year, the interest is calculated on the new balance, not on the original one hundred. Ten percent of one hundred ten is eleven dollars, so you end the second year with one hundred twenty-one dollars. This is called compound interest because the interest earns interest. The longer you leave the money in the account, the faster it grows."}],
+  qs:[
+  {k:"Detail", q:"What is the balance after the first year?", o:["$110","$100","$120","$121"]},
+  {k:"Detail", q:"How much interest is earned in the second year?", o:["$11","$10","$21","$110"]},
+  {k:"Main idea", q:"Why is it called compound interest?", o:["The interest earns interest.","The bank adds a fee.","The money is kept in two accounts.","The rate changes each year."]}
+ ]}
+]};
+
+const SPEAK = {
+b: [
+ {id:"sb1", type:"repeat", target:"My science class meets every morning at nine o'clock."},
+ {id:"sb2", type:"repeat", target:"We need to finish the project before Friday."},
+ {id:"sb3", type:"repeat", target:"The student council asked every class to share ideas for the festival."},
+ {id:"sb4", type:"respond", prompt:"Describe your favorite class. Tell why you like it.", target:"My favorite class is science because we do experiments and learn how things work.", kw:["favorite","because"], min:12},
+ {id:"sb5", type:"respond", prompt:"A new student asks how to get from the cafeteria to the library. Give directions.", target:"Go out of the cafeteria and turn left. Walk down the hall. The library is next to the gym.", kw:["turn","walk","next to"], min:14},
+ {id:"sb6", type:"respond", prompt:"Tell one way students can help the environment at school. Explain how it helps.", target:"Students can recycle paper and bottles. This reduces trash and keeps our school clean.", kw:["help","because"], min:12}
+],
+a: [
+ {id:"sa1", type:"repeat", target:"Scientists collect data carefully so that their conclusions are reliable."},
+ {id:"sa2", type:"repeat", target:"Although the experiment failed, the team learned which variables to change."},
+ {id:"sa3", type:"respond", prompt:"Some schools let students choose their own project topics. Do you think this is a good idea? Give two reasons.", target:"I think it is a good idea because students are more motivated when they choose a topic they care about. In addition, choice lets students use their strengths.", kw:["I think","because","in addition"], min:25},
+ {id:"sa4", type:"respond", prompt:"Compare studying alone with studying in a group. Which do you prefer, and why?", target:"Studying alone helps me concentrate, whereas studying in a group allows me to ask questions. I prefer a group when the topic is difficult.", kw:["prefer","because","however"], min:25},
+ {id:"sa5", type:"respond", prompt:"Explain how a graph can help people understand information.", target:"A graph shows data visually, so patterns and trends are easier to see than in a list of numbers.", kw:["so","easier","for example"], min:20},
+ {id:"sa6", type:"respond", prompt:"Describe a problem in your community and suggest a solution.", target:"In my community, many students cannot cross the busy street safely. A crosswalk with a traffic light would reduce the danger.", kw:["problem","solution","would"], min:25}
+]};
+
+const WRITE = {
+b: [
+ {id:"wb1", prompt:"Write about a place in your school where you like to study or relax. Describe the place and explain why you like it.", minW:40, minS:4, minutes:12, link:2},
+ {id:"wb2", prompt:"A new student joins your class. Write a short message with three tips for being successful in school.", minW:40, minS:4, minutes:12, link:2},
+ {id:"wb3", prompt:"Write about a time when you helped someone or someone helped you. Tell what happened and how you felt.", minW:50, minS:5, minutes:15, link:2}
+],
+a: [
+ {id:"wa1", prompt:"Should students be required to do volunteer work before they graduate? Write an essay that states your opinion and gives at least two reasons.", minW:120, minS:8, minutes:25, link:3},
+ {id:"wa2", prompt:"Describe a scientific or technological invention that changed daily life. Explain how it changed life, and give one example.", minW:120, minS:8, minutes:25, link:3},
+ {id:"wa3", prompt:"Your school wants to reduce food waste in the cafeteria. Write a proposal that explains one solution and why it would work.", minW:120, minS:8, minutes:25, link:3}
+]};
+
+/* ===== Vocabulary: [word, part of speech, group, level(1=Beginner-Intermediate, 2=Advanced), meaning, example, ko, vi, es, ja] ===== */
+const WORDS = [
+ ["energy","noun","science",1,"the power to make things move or work","Plants use sunlight as energy to make food.","에너지","năng lượng","energía","エネルギー"],
+ ["cell","noun","science",1,"the smallest living part of a plant or animal","Every cell in your body has a job.","세포","tế bào","célula","細胞"],
+ ["experiment","noun","science",1,"a test that you do to learn something","Our experiment showed that warm water dissolves sugar faster.","실험","thí nghiệm","experimento","実験"],
+ ["gravity","noun","science",1,"the force that pulls objects toward the Earth","Gravity pulls the apple from the tree to the ground.","중력","trọng lực","gravedad","重力"],
+ ["habitat","noun","science",1,"the natural home of a plant or animal","A pond is a habitat for frogs and fish.","서식지","môi trường sống","hábitat","生息地"],
+ ["hypothesis","noun","science",2,"a possible explanation that you can test","Her hypothesis was that plants grow faster with more light.","가설","giả thuyết","hipótesis","仮説"],
+ ["variable","noun","science",2,"something in an experiment that can change","The amount of water was the only variable in the test.","변수","biến số","variable","変数"],
+ ["ecosystem","noun","science",2,"all the living and non-living things in an area, and how they work together","A forest ecosystem includes trees, insects, soil, and rain.","생태계","hệ sinh thái","ecosistema","生態系"],
+ ["evaporate","verb","science",2,"to change from a liquid into a gas","Water begins to evaporate when the sun heats the lake.","증발하다","bay hơi","evaporarse","蒸発する"],
+ ["adapt","verb","science",2,"to change in order to live in a new place or situation","Some animals adapt to cold weather by growing thick fur.","적응하다","thích nghi","adaptarse","適応する"],
+ ["citizen","noun","social",1,"a person who legally belongs to a country","A citizen has rights and responsibilities in their country.","시민","công dân","ciudadano","市民"],
+ ["government","noun","social",1,"the group of people who lead a country and make its rules","The government decided to build a new bridge.","정부","chính phủ","gobierno","政府"],
+ ["community","noun","social",1,"a group of people who live in the same area","Our community holds a clean-up day every spring.","지역 사회","cộng đồng","comunidad","地域社会"],
+ ["border","noun","social",1,"a line that separates two countries or areas","The river forms a border between the two states.","국경","biên giới","frontera","国境"],
+ ["vote","verb","social",1,"to choose a person or idea in an election","Students vote for the class president in May.","투표하다","bỏ phiếu","votar","投票する"],
+ ["immigration","noun","social",2,"the act of moving to a new country to live there","Immigration has shaped the culture of many cities.","이민","sự nhập cư","inmigración","移民"],
+ ["economy","noun","social",2,"the system of money, work, and trade in a country","A strong economy creates more jobs.","경제","nền kinh tế","economía","経済"],
+ ["constitution","noun","social",2,"the basic set of laws that explains how a country is governed","The constitution protects the rights of citizens.","헌법","hiến pháp","constitución","憲法"],
+ ["trade","noun","social",2,"the buying and selling of goods between people or countries","Trade between countries brings new products to stores.","무역","thương mại","comercio","貿易"],
+ ["rights","noun","social",2,"freedoms and protections that every person should have","The class discussed the rights of workers.","권리","quyền","derechos","権利"],
+ ["fraction","noun","math",1,"a number that shows part of a whole","One half is a fraction that equals 0.5.","분수","phân số","fracción","分数"],
+ ["average","noun","math",1,"the sum of a group of numbers divided by how many numbers there are","The average of 4, 6, and 8 is 6.","평균","trung bình","promedio","平均"],
+ ["angle","noun","math",1,"the space between two lines that meet at a point","A right angle measures 90 degrees.","각도","góc","ángulo","角度"],
+ ["equation","noun","math",1,"a math sentence that shows two amounts are equal","Solve the equation to find the value of x.","방정식","phương trình","ecuación","方程式"],
+ ["graph","noun","math",1,"a drawing that shows how numbers are related","The graph shows how the temperature changed each day.","그래프","đồ thị","gráfica","グラフ"],
+ ["proportion","noun","math",2,"a statement that two ratios are equal","We used a proportion to enlarge the map.","비례","tỉ lệ thức","proporción","比例"],
+ ["probability","noun","math",2,"how likely it is that something will happen","The probability of rolling a six is one in six.","확률","xác suất","probabilidad","確率"],
+ ["coefficient","noun","math",2,"a number that multiplies a variable","In 5x, the coefficient is 5.","계수","hệ số","coeficiente","係数"],
+ ["perimeter","noun","math",2,"the distance around the outside of a shape","The perimeter of a square with sides of 3 cm is 12 cm.","둘레","chu vi","perímetro","周囲の長さ"],
+ ["estimate","verb","math",2,"to find an answer that is close but not exact","Estimate the total cost before you go to the store.","어림하다","ước lượng","estimar","見積もる"],
+ ["character","noun","lang",1,"a person or animal in a story","The main character in the story is a young inventor.","등장인물","nhân vật","personaje","登場人物"],
+ ["setting","noun","lang",1,"the time and place of a story","The setting of the novel is a small town in 1950.","배경","bối cảnh","ambiente (de un relato)","舞台設定"],
+ ["summary","noun","lang",1,"a short retelling of the main points","Write a summary of the chapter in three sentences.","요약","bản tóm tắt","resumen","要約"],
+ ["paragraph","noun","lang",1,"a group of sentences about one idea","Each paragraph should begin with a topic sentence.","문단","đoạn văn","párrafo","段落"],
+ ["theme","noun","lang",2,"the main message or lesson of a story","A theme of the story is that honesty builds trust.","주제","chủ đề","tema","テーマ"],
+ ["narrator","noun","lang",2,"the voice that tells a story","The narrator describes events from a child's point of view.","서술자","người kể chuyện","narrador","語り手"],
+ ["metaphor","noun","lang",2,"a comparison that says one thing is another thing","Saying “time is a river” is a metaphor.","은유","ẩn dụ","metáfora","隠喩"],
+ ["persuade","verb","lang",2,"to make someone believe or do something","The speaker tried to persuade the audience to recycle.","설득하다","thuyết phục","persuadir","説得する"],
+ ["conclusion","noun","lang",2,"the final part of a text that sums up the ideas","In the conclusion, the author repeats the main argument.","결론","kết luận","conclusión","結論"],
+ ["tone","noun","lang",2,"the writer's attitude, shown through word choice","The tone of the letter was polite and hopeful.","어조","giọng điệu","tono","語調"],
+ ["evidence","noun","general",1,"facts or details that show something is true","Use evidence from the text to support your answer.","증거","bằng chứng","evidencia","証拠"],
+ ["compare","verb","general",1,"to look at how things are alike and different","Compare the two maps and write three differences.","비교하다","so sánh","comparar","比較する"],
+ ["explain","verb","general",1,"to make something clear by giving details","Please explain how you solved the problem.","설명하다","giải thích","explicar","説明する"],
+ ["predict","verb","general",1,"to say what you think will happen","Predict what will happen if we add more salt.","예측하다","dự đoán","predecir","予測する"],
+ ["summarize","verb","general",1,"to tell the main points in a short way","Summarize the article in two sentences.","요약하다","tóm tắt","resumir","要約する"],
+ ["describe","verb","general",1,"to tell what something is like","Describe the setting using three details.","묘사하다","mô tả","describir","描写する"],
+ ["sequence","noun","general",1,"the order in which things happen","Put the events in sequence from first to last.","순서","trình tự","secuencia","順序"],
+ ["identify","verb","general",1,"to find and name something","Identify the main idea of each paragraph.","찾아내다","xác định","identificar","特定する"],
+ ["analyze","verb","general",2,"to study something carefully by looking at its parts","Analyze the graph to find a pattern.","분석하다","phân tích","analizar","分析する"],
+ ["infer","verb","general",2,"to figure something out from clues","We can infer that the character is nervous.","추론하다","suy luận","inferir","推論する"],
+ ["significant","adjective","general",2,"important or large enough to matter","There was a significant increase in sales.","중요한","quan trọng, đáng kể","significativo","重要な"],
+ ["factor","noun","general",2,"one of the things that causes a result","Weather is one factor that affects crop growth.","요인","yếu tố","factor","要因"],
+ ["impact","noun","general",2,"a strong effect on something","The new law had a big impact on small businesses.","영향","tác động","impacto","影響"],
+ ["interpret","verb","general",2,"to explain what something means","Interpret the poem and explain its message.","해석하다","diễn giải","interpretar","解釈する"],
+ ["consequence","noun","general",2,"a result of an action","One consequence of the storm was a power outage.","결과","hậu quả","consecuencia","結果"]
+].map(a=>({w:a[0],pos:a[1],g:a[2],l:a[3],def:a[4],ex:a[5],tr:[a[6],a[7],a[8],a[9]]}));
+
+const GROUPS = [["science","Science"],["social","Social studies"],["math","Math"],["lang","Language arts"],["general","General academic words"]];
+
+/* ===== Interface text: [English, Korean, Vietnamese, Spanish, Japanese]. Draft translations: native-speaker review needed. ===== */
+const LANGS = [["ko","한국어"],["vi","Tiếng Việt"],["es","Español"],["ja","日本語"]];
+const UI = {
+ title:["English Practice Room","영어 연습실","Phòng luyện tiếng Anh","Sala de práctica de inglés","英語練習ルーム"],
+ sub:["WIDA-style practice for grades 9–12","9–12학년용 WIDA식 연습","Luyện tập kiểu WIDA cho lớp 9–12","Práctica al estilo WIDA para los grados 9–12","9〜12年生向けのWIDA形式の練習"],
+ disc:["Independent practice tool. Not an official WIDA product.","독립적인 연습 도구입니다. 공식 WIDA 제품이 아닙니다.","Công cụ luyện tập độc lập. Không phải sản phẩm chính thức của WIDA.","Herramienta de práctica independiente. No es un producto oficial de WIDA.","独立した練習用ツールです。WIDAの公式製品ではありません。"],
+ home:["Home","홈","Trang chủ","Inicio","ホーム"],
+ level:["Level","수준","Trình độ","Nivel","レベル"],
+ beginner:["Beginner-Intermediate","초급-중급","Sơ cấp - Trung cấp","Principiante-Intermedio","初級〜中級"],
+ advanced:["Advanced","고급","Nâng cao","Avanzado","上級"],
+ chooseActivity:["Choose an activity","활동을 선택하세요","Chọn một hoạt động","Elige una actividad","活動を選んでください"],
+ reading:["Reading","읽기","Đọc","Lectura","読む"],
+ listening:["Listening","듣기","Nghe","Comprensión auditiva","聞く"],
+ speaking:["Speaking","말하기","Nói","Expresión oral","話す"],
+ writing:["Writing","쓰기","Viết","Escritura","書く"],
+ fullTest:["Full practice test","전체 연습 시험","Bài thi thử đầy đủ","Prueba de práctica completa","総合練習テスト"],
+ vocab:["Vocabulary","어휘","Từ vựng","Vocabulario","語彙"],
+ tutorial:["How it works","사용 방법","Cách sử dụng","Cómo funciona","使い方"],
+ progress:["My progress","내 진행 상황","Tiến độ của tôi","Mi progreso","学習の記録"],
+ translate:["Translate help","번역 도움","Trợ giúp dịch","Ayuda de traducción","翻訳ヘルプ"],
+ hideTr:["Hide translations","번역 숨기기","Ẩn bản dịch","Ocultar traducciones","翻訳を隠す"],
+ language:["Language","언어","Ngôn ngữ","Idioma","言語"],
+ draft:["Draft translations. A native speaker must review them.","초안 번역입니다. 원어민의 검토가 필요합니다.","Bản dịch nháp. Cần người bản ngữ kiểm tra.","Traducciones en borrador. Un hablante nativo debe revisarlas.","下書きの翻訳です。ネイティブスピーカーの確認が必要です。"],
+ start:["Start","시작","Bắt đầu","Empezar","開始"],
+ next:["Next","다음","Tiếp theo","Siguiente","次へ"],
+ prev:["Back","이전","Quay lại","Atrás","戻る"],
+ submit:["Submit answers","답안 제출","Nộp bài","Enviar respuestas","解答を提出"],
+ finish:["Finish","끝내기","Hoàn thành","Terminar","終了"],
+ again:["Try again","다시 하기","Thử lại","Intentar de nuevo","もう一度"],
+ toHome:["Back to home","홈으로 돌아가기","Về trang chủ","Volver al inicio","ホームに戻る"],
+ timeLeft:["Time left","남은 시간","Thời gian còn lại","Tiempo restante","残り時間"],
+ timeUp:["Time is up.","시간이 끝났습니다.","Hết giờ.","Se acabó el tiempo.","時間切れです。"],
+ play:["Play audio","오디오 재생","Phát âm thanh","Reproducir audio","音声を再生"],
+ replay:["Replay once","한 번 다시 듣기","Nghe lại một lần","Repetir una vez","もう一度聞く"],
+ playing:["Playing…","재생 중…","Đang phát…","Reproduciendo…","再生中…"],
+ script:["Audio script","오디오 대본","Văn bản âm thanh","Guion del audio","音声スクリプト"],
+ rec:["Start recording","녹음 시작","Bắt đầu ghi âm","Empezar a grabar","録音開始"],
+ stopRec:["Stop recording","녹음 중지","Dừng ghi âm","Detener grabación","録音停止"],
+ check:["Check my answer","내 답 확인","Kiểm tra câu trả lời","Revisar mi respuesta","答えをチェック"],
+ transcript:["Transcript (you can edit it)","받아쓴 내용(수정 가능)","Bản ghi (bạn có thể sửa)","Transcripción (puedes editarla)","文字起こし（編集できます）"],
+ typeInstead:["Type what you said","말한 내용을 입력하세요","Gõ nội dung bạn đã nói","Escribe lo que dijiste","言った内容を入力してください"],
+ hearPrompt:["Hear the prompt","문제 듣기","Nghe đề bài","Escuchar la indicación","お題を聞く"],
+ words:["words","단어","từ","palabras","語"],
+ sentences:["sentences","문장","câu","oraciones","文"],
+ checklist:["Self-review checklist","자기 점검표","Danh sách tự kiểm tra","Lista de autorrevisión","自己チェックリスト"],
+ flash:["Flashcards","단어 카드","Thẻ ghi nhớ","Tarjetas","フラッシュカード"],
+ quiz:["Quiz","퀴즈","Câu đố trắc nghiệm","Cuestionario","クイズ"],
+ flip:["Flip card","카드 뒤집기","Lật thẻ","Voltear tarjeta","カードをめくる"],
+ know:["I know it","알아요","Tôi biết từ này","Ya lo sé","わかる"],
+ learning:["Still learning","아직 공부 중","Vẫn đang học","Aún aprendiendo","まだ勉強中"],
+ meaning:["Meaning","뜻","Nghĩa","Significado","意味"],
+ example:["Example","예문","Ví dụ","Ejemplo","例文"],
+ group:["Word group","단어 그룹","Nhóm từ","Grupo de palabras","単語グループ"],
+ resume:["Continue saved test","저장된 시험 이어하기","Tiếp tục bài thi đã lưu","Continuar la prueba guardada","保存したテストを続ける"],
+ saveNote:["Progress saves on this device automatically.","진행 상황은 이 기기에 자동으로 저장됩니다.","Tiến độ được lưu tự động trên thiết bị này.","El progreso se guarda automáticamente en este dispositivo.","学習の記録はこの端末に自動で保存されます。"],
+ copyCode:["Copy progress code","진행 코드 복사","Sao chép mã tiến độ","Copiar código de progreso","記録コードをコピー"],
+ loadCode:["Load progress code","진행 코드 불러오기","Tải mã tiến độ","Cargar código de progreso","記録コードを読み込む"],
+ reset:["Erase all progress","모든 진행 상황 지우기","Xóa toàn bộ tiến độ","Borrar todo el progreso","記録をすべて消す"],
+ roughNote:["Rough practice feedback only. This is not a pronunciation score.","대략적인 연습용 피드백일 뿐입니다. 발음 점수가 아닙니다.","Chỉ là phản hồi luyện tập sơ bộ. Đây không phải điểm phát âm.","Solo comentarios aproximados de práctica. No es una puntuación de pronunciación.","おおよその練習用フィードバックです。発音の得点ではありません。"],
+ science:["Science","과학","Khoa học","Ciencias","理科"],
+ social:["Social studies","사회","Khoa học xã hội","Estudios sociales","社会"],
+ math:["Math","수학","Toán","Matemáticas","数学"],
+ lang:["Language arts","영어 언어 과목","Ngữ văn","Artes del lenguaje","言語科目"],
+ general:["General academic words","일반 학술 어휘","Từ vựng học thuật chung","Palabras académicas generales","一般的な学術語彙"],
+ instrReading:["Read the passage. Then choose the best answer for each question.","지문을 읽고 각 문제에 가장 알맞은 답을 고르세요.","Hãy đọc đoạn văn. Sau đó chọn đáp án đúng nhất cho mỗi câu hỏi.","Lee el texto. Luego elige la mejor respuesta para cada pregunta.","本文を読んで、各問題に最もよい答えを選んでください。"],
+ instrListening:["Listen to the audio. You can play it once and replay it once. Then answer the questions.","오디오를 들으세요. 한 번 재생하고 한 번 다시 들을 수 있습니다. 그다음 문제에 답하세요.","Hãy nghe âm thanh. Bạn có thể nghe một lần và nghe lại một lần. Sau đó trả lời các câu hỏi.","Escucha el audio. Puedes reproducirlo una vez y repetirlo una vez. Luego responde las preguntas.","音声を聞いてください。再生は1回、聞き直しは1回までできます。そのあと問題に答えてください。"],
+ instrSpeaking:["Read the task. Press the record button and speak. Then check your answer.","문제를 읽고 녹음 버튼을 누른 뒤 말하세요. 그다음 답을 확인하세요.","Hãy đọc đề bài. Nhấn nút ghi âm và nói. Sau đó kiểm tra câu trả lời.","Lee la tarea. Pulsa el botón de grabar y habla. Luego revisa tu respuesta.","お題を読み、録音ボタンを押して話してください。そのあと答えをチェックします。"],
+ instrWriting:["Read the prompt. Type your answer. Use the checklist to review your writing.","문제를 읽고 답을 입력하세요. 점검표로 글을 검토하세요.","Hãy đọc đề bài. Gõ câu trả lời của bạn. Dùng danh sách kiểm tra để xem lại bài viết.","Lee la indicación. Escribe tu respuesta. Usa la lista para revisar tu texto.","お題を読み、答えを入力してください。チェックリストで文章を見直しましょう。"],
+ noSR:["Speech recognition is not available here. Say your answer aloud, then type what you said.","이곳에서는 음성 인식을 사용할 수 없습니다. 답을 소리 내어 말한 다음 말한 내용을 입력하세요.","Không thể dùng nhận dạng giọng nói ở đây. Hãy nói to câu trả lời, rồi gõ nội dung bạn đã nói.","El reconocimiento de voz no está disponible aquí. Di tu respuesta en voz alta y luego escribe lo que dijiste.","ここでは音声認識を使えません。答えを声に出して言い、言った内容を入力してください。"],
+ noTTS:["Audio playback is not available in this browser.","이 브라우저에서는 오디오를 재생할 수 없습니다.","Trình duyệt này không phát được âm thanh.","Este navegador no puede reproducir audio.","このブラウザでは音声を再生できません。"]
+};
+(function(){
+'use strict';
+
+/* ================= helpers ================= */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const pick=(a,n)=>shuffle(a).slice(0,n);
+const fmt=s=>{s=Math.max(0,Math.floor(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
+const idx=arr=>Object.fromEntries(arr.map(x=>[x.id,x]));
+const R_BY=idx([...READING.b,...READING.a]), L_BY=idx([...LISTEN.b,...LISTEN.a]), S_BY=idx([...SPEAK.b,...SPEAK.a]), W_BY=idx([...WRITE.b,...WRITE.a]);
+const WORD_BY=Object.fromEntries(WORDS.map(w=>[w.w,w]));
+const L=k=>`<span class="en">${UI[k][0]}</span><span class="tr" data-k="${k}" hidden></span>`;
+const KIND={reading:'Reading',listening:'Listening',speaking:'Speaking',writing:'Writing',test:'Full test',vocab:'Vocabulary'};
+
+/* ================= saved progress ================= */
+const KEY='english-practice-room-v1';
+const defaults=()=>({v:1,level:'b',lang:'ko',hist:[],known:{},drafts:{},test:null,vs:{g:'all',set:'level'}});
+let storageOK=true;
+function load(){
+  try{ localStorage.setItem(KEY+'-t','1'); localStorage.removeItem(KEY+'-t'); }catch(e){ storageOK=false; }
+  try{ const r=localStorage.getItem(KEY); if(r) return Object.assign(defaults(),JSON.parse(r)); }catch(e){}
+  return defaults();
+}
+let P=load();
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(P)); }catch(e){ storageOK=false; } }
+function addHist(e){ P.hist.unshift(Object.assign({t:Date.now(),level:P.level},e)); if(P.hist.length>300)P.hist.length=300; save(); }
+
+/* ================= app state ================= */
+const S={help:false,view:'home',arg:undefined,lock:false};
+let TIMERS=[];
+const app=$('#app');
+
+function langIndex(){ return LANGS.findIndex(l=>l[0]===P.lang)+1||1; }
+function fillTr(root){
+  root=root||document; const li=langIndex();
+  $$('.tr[data-k]',root).forEach(e=>{ e.lang=P.lang; e.textContent=UI[e.dataset.k][li]; e.hidden=!S.help; });
+  $$('.tr[data-w]',root).forEach(e=>{ const w=WORD_BY[e.dataset.w]; e.lang=P.lang; e.textContent=w?(w.tr[li-1]+' (draft)'):''; e.hidden=!S.help; });
+  $$('option[data-k]',root).forEach(o=>{ o.textContent=UI[o.dataset.k][0]+(S.help?' · '+UI[o.dataset.k][li]:''); });
+}
+function timer(el,sec,onEnd){
+  const t0=Date.now(); let ended=false;
+  const tick=()=>{ const left=Math.max(0,sec-Math.floor((Date.now()-t0)/1000)); el.textContent=fmt(left); if(left===0&&!ended){ended=true;clearInterval(id);onEnd&&onEnd();} };
+  const id=setInterval(tick,500); TIMERS.push(id); tick();
+  return {stop(){clearInterval(id);}, used(){return Math.floor((Date.now()-t0)/1000);}};
+}
+
+/* ================= speech synthesis (listening) ================= */
+const TTS={
+  ok:('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window),
+  voices:[], keep:[], cur:null,
+  init(){ if(!this.ok)return; const f=()=>{ try{this.voices=speechSynthesis.getVoices()||[];}catch(e){} }; f(); try{ speechSynthesis.addEventListener('voiceschanged',f);}catch(e){} },
+  pool(){ const us=this.voices.filter(v=>/^en[-_]US/i.test(v.lang)); const en=this.voices.filter(v=>/^en/i.test(v.lang)); return us.length>1?us:en; },
+  stop(){ if(!this.ok)return; if(this.cur){ const c=this.cur; this.cur=null; c.abort(); } try{speechSynthesis.cancel();}catch(e){} },
+  play(lines,o){
+    this.stop();
+    const tok={dead:false,started:false,wd:0,abort(){ if(tok.dead)return; tok.dead=true; clearTimeout(tok.wd); o.onAbort&&o.onAbort(); }};
+    this.cur=tok;
+    const chunks=[];
+    lines.forEach(l=>{ (l.t.match(/[^.!?]+[.!?]*["”')\]]*\s*/g)||[l.t]).forEach(x=>{ if(x.trim()) chunks.push({s:l.s,t:x.trim()}); }); });
+    const pool=this.pool(); let i=0;
+    const next=()=>{
+      if(tok.dead)return;
+      if(i>=chunks.length){ tok.dead=true; clearTimeout(tok.wd); if(this.cur===tok)this.cur=null; o.onEnd&&o.onEnd(); return; }
+      const c=chunks[i++]; const u=new SpeechSynthesisUtterance(c.t);
+      u.lang='en-US'; u.rate=o.rate||0.9;
+      if(pool.length){ u.voice=pool[c.s%pool.length]; }
+      if(pool.length<2 && c.s>0){ u.pitch=0.75; }
+      u.onstart=()=>{ if(!tok.started){ tok.started=true; clearTimeout(tok.wd); o.onStart&&o.onStart(); } };
+      u.onend=()=>{ const nx=chunks[i]; setTimeout(next, nx&&nx.s!==c.s?550:180); };
+      u.onerror=e=>{ if(tok.dead)return; if(e&&(e.error==='interrupted'||e.error==='canceled'))return; tok.dead=true; clearTimeout(tok.wd); if(this.cur===tok)this.cur=null; o.onFail&&o.onFail(e&&e.error); };
+      this.keep.push(u); if(this.keep.length>6)this.keep.shift();
+      try{ speechSynthesis.resume(); speechSynthesis.speak(u); }catch(err){ tok.dead=true; o.onFail&&o.onFail('error'); }
+    };
+    tok.wd=setTimeout(()=>{ if(!tok.started&&!tok.dead){ tok.dead=true; try{speechSynthesis.cancel();}catch(e){} if(this.cur===tok)this.cur=null; o.onFail&&o.onFail('timeout'); } },5000);
+    next();
+  }
+};
+TTS.init();
+
+/* ================= speech recognition (speaking) ================= */
+const SRC=window.SpeechRecognition||window.webkitSpeechRecognition;
+const REC={ok:!!SRC,cur:null,stop(){ if(this.cur){ const c=this.cur; this.cur=null; try{c.stop();}catch(e){} } }};
+
+/* ================= navigation ================= */
+const VIEWS={};
+const ROOT={readingRun:'reading',listeningRun:'listening',speakingRun:'speaking',writingRun:'writing',flash:'vocab',quiz:'vocab',testRun:'test',testResults:'test'};
+function cleanup(){ TIMERS.forEach(clearInterval); TIMERS=[]; TTS.stop(); REC.stop(); }
+function go(view,arg){
+  cleanup(); S.view=view; S.arg=arg; S.lock=(view==='testRun');
+  $$('input[name=lvl]').forEach(r=>{ r.disabled=S.lock; });
+  render();
+}
+let firstRender=true;
+function render(){
+  app.innerHTML=''; VIEWS[S.view](app,S.arg); fillTr();
+  $$('.navb').forEach(b=>{ const root=ROOT[S.view]||S.view; if(b.dataset.go===root) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
+  window.scrollTo(0,0);
+  const h=$('h2',app); if(h&&!firstRender){ h.tabIndex=-1; h.focus({preventScroll:true}); }
+  firstRender=false;
+}
+const lvlBadge=()=>`<p class="lvlbadge">${L('level')}: ${L(P.level==='b'?'beginner':'advanced')}</p>`;
+function syncLevel(){ $$('input[name=lvl]').forEach(r=>{ r.checked=(r.value===P.level); }); }
+
+/* ================= shared question tools ================= */
+function prepQ(q){ return {k:q.k,q:q.q,o:shuffle(q.o.map((t,i)=>({t,c:i===0})))}; }
+function qHTML(name,num,pq){
+  return `<fieldset class="q" data-q="${name}"><legend><span class="tag">${esc(pq.k)}</span>${num}. ${esc(pq.q)}</legend>`+
+    pq.o.map((o,i)=>`<label class="opt"><input type="radio" name="${name}" value="${i}"><span class="bub" aria-hidden="true">${'ABCD'[i]}</span><span class="otext">${esc(o.t)}</span></label>`).join('')+
+    `<p class="fb" data-fb="${name}"></p></fieldset>`;
+}
+function gradeSet(root,items){
+  let score=0; const bySkill={};
+  items.forEach(it=>{
+    const sel=root.querySelector(`input[name="${it.name}"]:checked`);
+    const fs=root.querySelector(`fieldset[data-q="${it.name}"]`);
+    const right=it.pq.o.findIndex(o=>o.c); const ok=!!sel&&(+sel.value===right);
+    const sk=it.pq.k; bySkill[sk]=bySkill[sk]||[0,0]; bySkill[sk][1]++; if(ok){score++;bySkill[sk][0]++;}
+    $$('label.opt',fs).forEach((lab,i)=>{
+      lab.classList.add('locked'); $('input',lab).disabled=true;
+      if(i===right){ lab.classList.add('right'); lab.insertAdjacentHTML('beforeend','<span class="badge">✓ Correct answer</span>'); }
+      else if(sel&&+sel.value===i){ lab.classList.add('wrongpick'); lab.insertAdjacentHTML('beforeend','<span class="badge">✗ Your answer</span>'); }
+    });
+    $('.fb',fs).textContent=ok?'✓ Correct':(sel?'✗ Not correct':'✗ No answer');
+  });
+  return {score,total:items.length,bySkill};
+}
+function sumHTML(title,res){
+  const pct=res.total?Math.round(res.score/res.total*100):0;
+  const keys=Object.keys(res.bySkill||{});
+  const sk=keys.length?'<h4>By skill</h4><ul class="plain">'+keys.map(k=>`<li>${esc(k)}: ${res.bySkill[k][0]} of ${res.bySkill[k][1]}</li>`).join('')+'</ul>':'';
+  return `<section class="card" id="sumcard" tabindex="-1"><h3>${esc(title)}</h3><p class="bignum">${res.score} / ${res.total} <span>(${pct}%)</span></p><div class="meter" aria-hidden="true"><i style="width:${pct}%"></i></div>${sk}${res.secs!=null?`<p class="mute">Time used: ${fmt(res.secs)}</p>`:''}<p class="mute">Practice result only. It is not a WIDA score or a proficiency level.</p></section>`;
+}
+function showSummary(root,title,res){ const box=$('#sum',root); box.innerHTML=sumHTML(title,res); const c=$('#sumcard',box); c.scrollIntoView({block:'start'}); c.focus({preventScroll:true}); }
+function updateProg(){
+  const p=$('#prog'); if(!p)return;
+  const fs=$$('fieldset.q',app); const done=fs.filter(f=>f.querySelector('input:checked')).length;
+  p.textContent=`Answered ${done} of ${fs.length}`;
+}
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.matches&&t.matches('.opt input[type=radio]')){ $$(`input[name="${t.name}"]`).forEach(r=>r.closest('.opt').classList.toggle('sel',r.checked)); updateProg(); }
+});
+function practiceDone(kind,label,back){
+  return (res,act)=>{
+    addHist({kind,label,score:res.score,total:res.total,note:res.note});
+    act.innerHTML=`<button class="btn primary" data-go="${S.view}" data-arg="${esc(S.arg||'')}">${L('again')}</button><button class="btn" data-go="${back}">${L('prev')}</button>`; fillTr(act);
+  };
+}
+
+/* ================= HOME ================= */
+const TILES=[
+ ['reading','R','reading','Passages, questions, a timer, and a score summary.'],
+ ['listening','L','listening','Audio read by your browser. The script stays hidden until review.'],
+ ['speaking','S','speaking','Record or type your answer. Get rough practice feedback.'],
+ ['writing','W','writing','Type your answer with a timer and a self-review checklist.'],
+ ['test','4','fullTest','Reading, listening, speaking, and writing in order.'],
+ ['vocab','V','vocab','Flashcards and quizzes with academic words.'],
+ ['tutorial','?','tutorial','A short tour of how this app works.'],
+ ['progress','P','progress','Your results, saved work, and a progress code.']
+];
+VIEWS.home=el=>{
+  let resume='';
+  if(P.test&&P.test.stage<4){ resume=`<section class="card"><h3>${L('resume')}</h3><p>Part ${P.test.stage+1} of 4 is next.</p><button class="btn primary" data-act="resume">${L('resume')}</button></section>`; }
+  el.innerHTML=`<h2>${L('chooseActivity')}</h2>${lvlBadge()}<p>Change your level with the buttons above. Everything on this page is practice only.</p>${resume}
+  <div class="tiles">${TILES.map(t=>`<button class="tile" data-go="${t[0]}"><span class="mark" aria-hidden="true">${t[1]}</span><span class="tt">${L(t[2])}</span><span class="td">${t[3]}</span></button>`).join('')}</div>`;
+};
+
+/* ================= READING ================= */
+VIEWS.reading=el=>{
+  const ps=READING[P.level]; const nAll=ps.reduce((s,p)=>s+p.qs.length,0);
+  el.innerHTML=`<h2>${L('reading')}</h2>${lvlBadge()}<p>${L('instrReading')}</p>`+
+   ps.map(p=>`<article class="card"><h3>${esc(p.title)}</h3><p class="mute">${esc(p.topic)} · ${p.qs.length} questions</p><button class="btn primary" data-go="readingRun" data-arg="${p.id}">${L('start')}</button></article>`).join('')+
+   `<article class="card"><h3>All passages</h3><p class="mute">${ps.length} passages · ${nAll} questions</p><button class="btn" data-go="readingRun" data-arg="all">${L('start')}</button></article>`;
+};
+VIEWS.readingRun=(el,arg)=>{
+  const ps=READING[P.level]; const list=arg==='all'?ps:ps.filter(p=>p.id===arg);
+  if(!list.length){ go('reading'); return; }
+  const nq=list.reduce((s,p)=>s+p.qs.length,0); const mins=Math.round(nq*(P.level==='b'?1.5:1.75));
+  el.innerHTML=`<h2>${L('reading')}</h2>${lvlBadge()}<div id="run"></div>`;
+  runReading($('#run',el),list,{minutes:mins,auto:false,onDone:practiceDone('reading',arg==='all'?'All passages':list[0].title,'reading')});
+};
+function runReading(el,list,o){
+  const items=[]; let n=0;
+  const body=list.map(p=>{
+    let c=0;
+    const ph=p.text.map(t=>t[0]==='~'?`<p class="para un">${esc(t.slice(1))}</p>`:`<div class="para"><span class="pn" aria-hidden="true">${++c}</span><p><span class="sr-only" style="position:absolute;left:-999px">Paragraph ${c}. </span>${esc(t)}</p></div>`).join('');
+    const qh=p.qs.map(q=>{ n++; const name='r'+n; const pq=prepQ(q); items.push({name,pq}); return qHTML(name,n,pq); }).join('');
+    return `<section class="card"><h3>${esc(p.title)}</h3><p class="mute">${esc(p.topic)}</p><div class="passage">${ph}</div>${qh}</section>`;
+  }).join('');
+  el.innerHTML=`<div class="sticky row spread" style="margin-bottom:0"><span>${L('timeLeft')}: <span class="timer" id="tm" role="timer">--:--</span></span><span id="prog" class="mute"></span></div>
+   <p id="tnote" class="rough" hidden></p><p>${L('instrReading')}</p><div id="sum"></div>${body}
+   <p id="warn" class="fb" role="status"></p>
+   <div class="row"><button class="btn primary" id="sub">${L('submit')}</button></div><div class="row" id="act"></div>`;
+  fillTr(el); updateProg();
+  let done=false, warned=false;
+  const tm=timer($('#tm',el),o.minutes*60,()=>{ if(o.auto){ finish(); } else { const t=$('#tnote',el); t.hidden=false; t.innerHTML=L('timeUp')+' You can keep working or submit your answers.'; fillTr(t); } });
+  function finish(){
+    if(done)return; done=true; tm.stop();
+    const res=gradeSet(el,items); res.secs=tm.used(); res.kind='reading';
+    $('#sub',el).disabled=true; $('#warn',el).textContent='';
+    showSummary(el,'Reading results',res);
+    o.onDone(res,$('#act',el));
+  }
+  $('#sub',el).addEventListener('click',()=>{
+    const un=items.filter(it=>!el.querySelector(`input[name="${it.name}"]:checked`)).length;
+    if(un&&!warned&&!o.auto){ warned=true; $('#warn',el).textContent=`${un} question${un>1?'s':''} not answered. Press “Submit answers” again to finish anyway.`; return; }
+    finish();
+  });
+}
+
+/* ================= LISTENING ================= */
+VIEWS.listening=el=>{
+  const cs=LISTEN[P.level];
+  el.innerHTML=`<h2>${L('listening')}</h2>${lvlBadge()}<p>${L('instrListening')}</p>`+
+   cs.map(c=>`<article class="card"><h3>${esc(c.title)}</h3><p class="mute">${esc(c.topic)} · ${c.qs.length} questions</p><button class="btn primary" data-go="listeningRun" data-arg="${c.id}">${L('start')}</button></article>`).join('')+
+   `<article class="card"><h3>All audio clips</h3><p class="mute">${cs.length} clips · ${cs.reduce((s,c)=>s+c.qs.length,0)} questions</p><button class="btn" data-go="listeningRun" data-arg="all">${L('start')}</button></article>`;
+};
+VIEWS.listeningRun=(el,arg)=>{
+  const cs=LISTEN[P.level]; const list=arg==='all'?cs:cs.filter(c=>c.id===arg);
+  if(!list.length){ go('listening'); return; }
+  el.innerHTML=`<h2>${L('listening')}</h2>${lvlBadge()}<div id="run"></div>`;
+  runListening($('#run',el),list,{onDone:practiceDone('listening',arg==='all'?'All audio clips':list[0].title,'listening')});
+};
+function scriptHTML(c){
+  const multi=new Set(c.lines.map(l=>l.s)).size>1;
+  return c.lines.map(l=>`<p>${multi?`<strong>${esc(l.s)}:</strong> `:''}${esc(l.t)}</p>`).join('');
+}
+function runListening(el,list,o){
+  const items=[]; let n=0;
+  const body=list.map((c,ci)=>{
+    const qh=c.qs.map(q=>{ n++; const name='l'+n; const pq=prepQ(q); items.push({name,pq}); return qHTML(name,n,pq); }).join('');
+    return `<section class="card"><h3>Audio ${ci+1}: ${esc(c.topic)}</h3>
+     <div class="row"><button class="btn primary" data-play="${ci}" id="pb${ci}"></button><span class="mute" role="status" id="ps${ci}"></span></div>
+     <p class="mute" id="ns${ci}"></p>${qh}
+     <details class="script" id="sc${ci}" hidden><summary>${L('script')}</summary><div>${scriptHTML(c)}</div></details></section>`;
+  }).join('');
+  el.innerHTML=`<div class="sticky row spread" style="margin-bottom:0"><span class="mute">One play and one replay for each clip. No background music.</span><span id="prog" class="mute"></span></div>
+   <p>${L('instrListening')}</p><div id="sum"></div>${body}
+   <p id="warn" class="fb" role="status"></p>
+   <div class="row"><button class="btn primary" id="sub">${L('submit')}</button></div><div class="row" id="act"></div>`;
+  const st=list.map(()=>({left:2,busy:false}));
+  function ub(ci){
+    const s=st[ci], b=$('#pb'+ci,el); b.disabled=s.busy||s.left<=0||!TTS.ok;
+    b.innerHTML=s.busy?L('playing'):(s.left===2?L('play'):(s.left===1?L('replay')+' <span class="en">(1 left)</span>':'<span class="en">No replays left</span>')); fillTr(b);
+  }
+  list.forEach((c,ci)=>{
+    ub(ci);
+    if(!TTS.ok){ $('#ns'+ci,el).innerHTML=`${L('noTTS')} <button class="btn" data-showscript="${ci}">Show the script now (this turns it into reading practice)</button>`; fillTr($('#ns'+ci,el)); }
+  });
+  fillTr(el); updateProg();
+  el.addEventListener('click',e=>{
+    const sb=e.target.closest('[data-showscript]'); if(sb){ const d=$('#sc'+sb.dataset.showscript,el); d.hidden=false; d.open=true; return; }
+    const pb=e.target.closest('[data-play]'); if(!pb)return;
+    const ci=+pb.dataset.play, s=st[ci], c=list[ci], ps=$('#ps'+ci,el);
+    if(s.busy||s.left<=0||!TTS.ok)return;
+    s.busy=true; ps.textContent='Starting…'; ub(ci);
+    const spk=Array.from(new Set(c.lines.map(l=>l.s)));
+    TTS.play(c.lines.map(l=>({s:spk.indexOf(l.s),t:l.t})),{rate:P.level==='b'?0.85:0.95,
+      onStart(){ s.left--; ps.textContent='Playing…'; },
+      onEnd(){ s.busy=false; ps.textContent=s.left>0?'Finished. You can replay once.':'Finished. No replays left.'; ub(ci); },
+      onAbort(){ s.busy=false; ps.textContent=''; ub(ci); },
+      onFail(){ s.busy=false; ps.textContent='Audio did not start. Check your volume or try another browser. This play was not counted.'; ub(ci); }
+    });
+  });
+  let done=false, warned=false;
+  function finish(){
+    if(done)return; done=true; TTS.stop();
+    const res=gradeSet(el,items); res.kind='listening';
+    $('#sub',el).disabled=true; $('#warn',el).textContent='';
+    list.forEach((c,ci)=>{ const d=$('#sc'+ci,el); d.hidden=false; d.open=true; $('#pb'+ci,el).disabled=true; });
+    showSummary(el,'Listening results (scripts are now shown below each clip)',res);
+    o.onDone(res,$('#act',el));
+  }
+  $('#sub',el).addEventListener('click',()=>{
+    const un=items.filter(it=>!el.querySelector(`input[name="${it.name}"]:checked`)).length;
+    if(un&&!warned){ warned=true; $('#warn',el).textContent=`${un} question${un>1?'s':''} not answered. Press “Submit answers” again to finish anyway.`; return; }
+    finish();
+  });
+}
+
+/* ================= SPEAKING ================= */
+const NUMW=['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen','twenty'];
+function norm(s){
+  return s.toLowerCase().replace(/[’‘]/g,"'").replace(/[^a-z0-9'\s-]/g,' ').replace(/-/g,' ').split(/\s+/).filter(Boolean).map(t=>/^\d+$/.test(t)&&+t<=20?NUMW[+t]:t);
+}
+function lcs(t,s){
+  const n=t.length,m=s.length; const dp=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  for(let i=1;i<=n;i++)for(let j=1;j<=m;j++) dp[i][j]=t[i-1]===s[j-1]?dp[i-1][j-1]+1:Math.max(dp[i-1][j],dp[i][j-1]);
+  const hit=new Array(n).fill(false); let i=n,j=m;
+  while(i>0&&j>0){ if(t[i-1]===s[j-1]){hit[i-1]=true;i--;j--;} else if(dp[i-1][j]>=dp[i][j-1]) i--; else j--; }
+  return {hit,len:dp[n][m]};
+}
+const ROUGH_HTML=`<p class="rough" role="note"><strong>${L('roughNote')}</strong> The microphone text can contain mistakes, especially with accents, so edit the transcript before you check it.</p>`;
+function speakFeedback(p,text){
+  const sp=norm(text), tg=norm(p.target);
+  if(!sp.length) return {html:`<div class="fbox"><p>Nothing to check yet. Record or type your answer first.</p></div>`,data:null};
+  const a=lcs(tg,sp); const match=Math.round(a.len/tg.length*100);
+  const missed=tg.filter((w,i)=>!a.hit[i]); const extra=Math.max(0,sp.length-a.len);
+  const band=match>=85?'Very close to the target.':match>=60?'Close to the target.':'Far from the target. Try again slowly.';
+  let h='<div class="fbox">', data={type:p.type,words:sp.length,match};
+  if(p.type==='repeat'){
+    h+=`<p><strong>Match to the target sentence: ${match}%</strong> (${a.len} of ${tg.length} words in order). ${band}</p><div class="meter" aria-hidden="true"><i style="width:${match}%"></i></div>`;
+    h+=`<p>Missed words: ${missed.length?missed.map(w=>`<span class="chip">${esc(w)}</span>`).join(''):'none'}</p>`;
+    h+=`<p>Extra words: ${extra}. Length: you said ${sp.length} words; the target has ${tg.length} words.</p>`;
+    data.note=`Word match ${match}%`;
+  } else {
+    const joined=' '+sp.join(' ')+' ';
+    const used=p.kw.filter(k=>joined.includes(' '+norm(k).join(' ')+' '));
+    const ratio=Math.min(100,Math.round(sp.length/p.min*100));
+    h+=`<p><strong>Length: ${sp.length} words</strong> (goal: at least ${p.min}). ${sp.length>=p.min?'Good length.':'Add more detail to reach the goal.'}</p><div class="meter" aria-hidden="true"><i style="width:${ratio}%"></i></div>`;
+    h+=`<p>Words to try: ${p.kw.map(k=>`<span class="chip ${used.includes(k)?'ok':''}">${used.includes(k)?'✓ ':''}${esc(k)}</span>`).join('')} (${used.length} of ${p.kw.length} used)</p>`;
+    h+=`<p>Example answer: “${esc(p.target)}”</p><p>Match to the example: ${match}%. Your answer can be very different and still be good, so a low number is normal here.</p>`;
+    data.kwUsed=used.length; data.kwTotal=p.kw.length; data.note=`${used.length}/${p.kw.length} key words, ${sp.length} words`;
+  }
+  h+=`<p class="mute">Rough practice feedback only. This is not a pronunciation score.</p></div>`;
+  return {html:h,data};
+}
+VIEWS.speaking=el=>{
+  const ps=SPEAK[P.level];
+  el.innerHTML=`<h2>${L('speaking')}</h2>${lvlBadge()}<p>${L('instrSpeaking')}</p>${ROUGH_HTML}`+
+   ps.map(p=>`<article class="card"><h3>${p.type==='repeat'?'Repeat a sentence':'Answer a question'}</h3><p class="mute">${esc(p.type==='repeat'?p.target:p.prompt)}</p><button class="btn primary" data-go="speakingRun" data-arg="${p.id}">${L('start')}</button></article>`).join('');
+};
+VIEWS.speakingRun=(el,arg)=>{
+  const p=S_BY[arg]; if(!p){ go('speaking'); return; }
+  el.innerHTML=`<h2>${L('speaking')}</h2>${lvlBadge()}<div id="run"></div>`;
+  runSpeaking($('#run',el),[p],{onDone:practiceDone('speaking',p.type==='repeat'?'Repeat: '+p.target.slice(0,40)+'…':'Answer: '+p.prompt.slice(0,40)+'…','speaking')});
+};
+function runSpeaking(el,list,o){
+  const results={};
+  const cards=list.map((p,i)=>`<section class="card" data-i="${i}"><h3>Task ${i+1}: ${p.type==='repeat'?'Repeat the sentence':'Answer the question'}</h3>
+    <p class="big">${p.type==='repeat'?'Read this sentence aloud: <strong>“'+esc(p.target)+'”</strong>':esc(p.prompt)}</p>
+    ${p.type==='respond'?`<p class="mute">Words to try: ${p.kw.map(k=>`<span class="chip ok">${esc(k)}</span>`).join('')} · Goal: at least ${p.min} words</p>`:''}
+    <div class="row"><button class="btn" data-hear="${i}">${L('hearPrompt')}</button>${REC.ok?`<button class="btn primary" data-rec="${i}" aria-pressed="false">${L('rec')}</button>`:''}</div>
+    <p class="mute" role="status" id="st${i}"></p>
+    <label class="lbl" for="tx${i}">${REC.ok?L('transcript'):L('typeInstead')}</label>
+    <textarea class="ta short" id="tx${i}" spellcheck="false" autocomplete="off"></textarea>
+    <div class="row"><button class="btn" data-chk="${i}">${L('check')}</button></div>
+    <div id="fb${i}" aria-live="polite"></div></section>`).join('');
+  el.innerHTML=`<p>${L('instrSpeaking')}</p>${ROUGH_HTML}
+   ${REC.ok?'':`<p class="fbox" role="status">${L('noSR')}</p>`}${cards}
+   <div id="sum"></div><div class="row"><button class="btn primary" id="fin">${L('finish')}</button></div><div class="row" id="act"></div>`;
+  fillTr(el);
+  let recIdx=-1, finalText='', lastShown='';
+  function setRec(i,on){ const b=$(`[data-rec="${i}"]`,el); if(!b)return; b.setAttribute('aria-pressed',on?'true':'false'); b.innerHTML=on?L('stopRec'):L('rec'); fillTr(b); }
+  function stopAll(){ REC.stop(); if(recIdx>=0){ setRec(recIdx,false); recIdx=-1; } }
+  el.addEventListener('click',e=>{
+    const h=e.target.closest('[data-hear]');
+    if(h){
+      const i=+h.dataset.hear, p=list[i], st=$('#st'+i,el);
+      if(!TTS.ok){ st.textContent='Audio playback is not available in this browser.'; return; }
+      stopAll(); const text=p.type==='repeat'?p.target:p.prompt;
+      TTS.play([{s:0,t:text}],{rate:0.9,onStart(){st.textContent='Playing the prompt…';},onEnd(){st.textContent='';},onAbort(){st.textContent='';},onFail(){st.textContent='Audio did not start. Check your volume.';}});
+      return;
+    }
+    const r=e.target.closest('[data-rec]');
+    if(r){
+      const i=+r.dataset.rec, st=$('#st'+i,el), ta=$('#tx'+i,el);
+      if(recIdx===i){ stopAll(); st.textContent='Stopped. Edit the transcript if needed, then press Check.'; return; }
+      stopAll(); TTS.stop();
+      let rec; try{ rec=new SRC(); }catch(err){ st.textContent='Could not start recording. Type your answer instead.'; return; }
+      rec.lang='en-US'; rec.continuous=true; rec.interimResults=true; rec.maxAlternatives=1;
+      finalText=''; lastShown=''; ta.value='';
+      rec.onresult=ev=>{ let interim=''; for(let k=ev.resultIndex;k<ev.results.length;k++){ const t=ev.results[k][0].transcript; if(ev.results[k].isFinal) finalText+=t+' '; else interim+=t; } lastShown=(finalText+interim).trim(); ta.value=lastShown; };
+      rec.onerror=ev=>{
+        const c=ev&&ev.error;
+        if(c==='not-allowed'||c==='service-not-allowed') st.textContent='The microphone is blocked here, so recording is not possible. This can happen inside an embedded page. Say your answer aloud, type what you said below, then press Check.';
+        else if(c==='no-speech') st.textContent='I did not hear anything. Move closer to the microphone and try again, or type your answer.';
+        else if(c==='audio-capture') st.textContent='No microphone was found. Type your answer instead.';
+        else if(c==='network') st.textContent='Speech recognition needs an internet connection. Type your answer instead.';
+        else if(c!=='aborted') st.textContent='Recording stopped ('+c+'). You can type your answer instead.';
+        if(recIdx===i){ recIdx=-1; setRec(i,false); }
+      };
+      rec.onend=()=>{ if(REC.cur===rec){ REC.cur=null; } if(recIdx===i){ recIdx=-1; setRec(i,false); if(!/blocked|did not hear|No microphone|internet|stopped \(/.test(st.textContent)) st.textContent='Recording finished. Edit the transcript if needed, then press Check.'; } };
+      try{ rec.start(); REC.cur=rec; recIdx=i; setRec(i,true); st.textContent='Listening… speak now. Press the button again to stop.'; }
+      catch(err){ st.textContent='Could not start recording. Type your answer instead.'; }
+      return;
+    }
+    const c=e.target.closest('[data-chk]');
+    if(c){
+      const i=+c.dataset.chk; stopAll();
+      const out=speakFeedback(list[i],$('#tx'+i,el).value); $('#fb'+i,el).innerHTML=out.html;
+      if(out.data) results[i]=out.data; else delete results[i];
+    }
+  });
+  $('#fin',el).addEventListener('click',()=>{
+    stopAll(); $('#fin',el).disabled=true;
+    const arr=Object.values(results);
+    const reps=arr.filter(r=>r.type==='repeat'), rsp=arr.filter(r=>r.type==='respond');
+    const avg=a=>a.length?Math.round(a.reduce((s,x)=>s+x,0)/a.length):null;
+    const res={kind:'speaking',score:arr.length,total:list.length,tasks:arr,avgMatch:avg(reps.map(r=>r.match)),
+      note:arr.length?arr.map(r=>r.note).join('; '):'No task was checked'};
+    $('#sum',el).innerHTML=`<section class="card" id="sumcard" tabindex="-1"><h3>Speaking summary</h3><p>Tasks checked: ${arr.length} of ${list.length}.</p><ul class="plain">${arr.map(r=>`<li>${esc(r.note)}</li>`).join('')||'<li>No task was checked.</li>'}</ul><p class="mute">Rough practice feedback only. This is not a pronunciation score, a WIDA score, or a proficiency level.</p></section>`;
+    const sc=$('#sumcard',el); sc.scrollIntoView({block:'start'}); sc.focus({preventScroll:true});
+    o.onDone(res,$('#act',el));
+  });
+}
+
+/* ================= WRITING ================= */
+const LINKS=['first','second','third','next','then','after that','finally','because','also','but','so','for example','for instance','however','another','one reason','in my opinion','in addition','additionally','furthermore','moreover','although','though','whereas','while','therefore','as a result','consequently','such as','in contrast','on the other hand','in conclusion','overall','since','despite','instead'];
+const countWords=t=>{ const m=t.trim().match(/[A-Za-z0-9À-ÿ]+(?:['’-][A-Za-z0-9À-ÿ]+)*/g); return m?m.length:0; };
+const countSent=t=>{ const m=t.trim().match(/[^.!?]+[.!?]+(?=\s|$)|[^.!?]+$/g); return m?m.filter(s=>/[A-Za-z0-9]/.test(s)).length:0; };
+function findLinks(t){ const low=' '+t.toLowerCase().replace(/[^a-z\s']/g,' ')+' '; return LINKS.filter(w=>low.includes(' '+w+' ')); }
+VIEWS.writing=el=>{
+  const ws=WRITE[P.level];
+  el.innerHTML=`<h2>${L('writing')}</h2>${lvlBadge()}<p>${L('instrWriting')}</p>`+
+   ws.map(w=>`<article class="card"><h3>${esc(w.prompt)}</h3><p class="mute">Goal: ${w.minW}+ words · ${w.minutes} minutes${P.drafts[w.id]?' · Draft saved':''}</p><button class="btn primary" data-go="writingRun" data-arg="${w.id}">${L('start')}</button></article>`).join('');
+};
+VIEWS.writingRun=(el,arg)=>{
+  const w=W_BY[arg]; if(!w){ go('writing'); return; }
+  el.innerHTML=`<h2>${L('writing')}</h2>${lvlBadge()}<div id="run"></div>`;
+  runWriting($('#run',el),w,{onDone:practiceDone('writing',w.prompt.slice(0,48)+'…','writing')});
+};
+function runWriting(el,w,o){
+  const draft=o.test?'':(P.drafts[w.id]||'');
+  el.innerHTML=`<div class="sticky row spread" style="margin-bottom:0"><span>${L('timeLeft')}: <span class="timer" id="tm" role="timer">--:--</span></span><span><strong id="wc">0</strong> ${L('words')} · <strong id="sc">0</strong> ${L('sentences')}</span></div>
+   <p id="tnote" class="rough" hidden></p><p>${L('instrWriting')}</p>
+   <section class="card"><h3>Prompt</h3><p class="big">${esc(w.prompt)}</p><p class="mute">Goal: at least ${w.minW} words and ${w.minS} sentences. Plan: a topic sentence, supporting sentences, and a closing sentence.</p></section>
+   <label class="lbl" for="wt">Your answer (typing only)</label>
+   <textarea id="wt" class="ta" spellcheck="true" autocomplete="off" autocapitalize="sentences"></textarea>
+   <p class="mute" id="ds"></p>
+   <section class="card" aria-labelledby="ckh"><h3 id="ckh">${L('checklist')}</h3>
+    <ul class="ck">
+     <li><span class="st" id="s1">Not yet</span><strong>Length.</strong> <span id="d1" class="mute"></span></li>
+     <li><span class="st" id="s2">Not yet</span><strong>Number of sentences.</strong> <span id="d2" class="mute"></span></li>
+     <li><span class="st" id="s3">Not yet</span><strong>Linking words</strong> (need ${w.link}). <span id="d3" class="mute"></span></li>
+     <li><label><input type="checkbox" id="m4"><span><strong>Clear topic sentence.</strong> My first sentence tells the main idea.<br><span id="d4" class="mute"></span></span></label></li>
+     <li><label><input type="checkbox" id="m5"><span><strong>Closing sentence.</strong> My last sentence ends the writing.</span></label></li>
+     <li><label><input type="checkbox" id="m6"><span><strong>Proofreading.</strong> I checked spelling, capital letters, and punctuation.</span></label></li>
+    </ul></section>
+   <div id="sum"></div><div class="row"><button class="btn primary" id="fin">${L('finish')}</button></div><div class="row" id="act"></div>`;
+  fillTr(el);
+  const ta=$('#wt',el); ta.value=draft; let done=false, dt=0;
+  const mark=(i,ok,txt)=>{ const s=$('#s'+i,el); s.textContent=ok?'Done ✓':'Not yet'; s.classList.toggle('done',ok); $('#d'+i,el).textContent=txt; };
+  function stats(){
+    const t=ta.value, wc=countWords(t), sc=countSent(t), lk=findLinks(t);
+    $('#wc',el).textContent=wc; $('#sc',el).textContent=sc;
+    mark(1,wc>=w.minW,`${wc} of ${w.minW} words`);
+    mark(2,sc>=w.minS,`${sc} of ${w.minS} sentences`);
+    mark(3,lk.length>=w.link,lk.length?`Found: ${lk.join(', ')}`:'None found yet. Try: first, because, for example, however.');
+    const first=(t.trim().match(/^[^.!?]+[.!?]?/)||[''])[0];
+    $('#d4',el).textContent=first?`Your first sentence: “${first.trim()}”`:'';
+    return {wc,sc,lk};
+  }
+  function passed(){ const s=stats(); return (s.wc>=w.minW)+(s.sc>=w.minS)+(s.lk.length>=w.link)+$$('input[type=checkbox]',el).filter(c=>c.checked).length; }
+  ta.addEventListener('input',()=>{ stats(); if(!o.test&&!done){ clearTimeout(dt); dt=setTimeout(()=>{ P.drafts[w.id]=ta.value; save(); $('#ds',el).textContent=storageOK?'Draft saved on this device.':'Saving is not available here. Copy your text before you leave.'; },600); } });
+  stats();
+  const tm=timer($('#tm',el),w.minutes*60,()=>{ if(o.auto){ finish(); } else { const t=$('#tnote',el); t.hidden=false; t.innerHTML=L('timeUp')+' You can keep writing or press Finish.'; fillTr(t); } });
+  function finish(){
+    if(done)return; done=true; tm.stop(); clearTimeout(dt);
+    if(!o.test){ P.drafts[w.id]=ta.value; save(); }
+    ta.readOnly=true; $('#fin',el).disabled=true;
+    const s=stats(); const sc=passed();
+    const res={kind:'writing',score:sc,total:6,words:s.wc,sentences:s.sc,secs:tm.used(),note:`${s.wc} words, ${s.sc} sentences`};
+    $('#sum',el).innerHTML=`<section class="card" id="sumcard" tabindex="-1"><h3>Writing summary</h3><p class="bignum">${sc} / 6 <span>checklist items met</span></p><div class="meter" aria-hidden="true"><i style="width:${Math.round(sc/6*100)}%"></i></div><p>${s.wc} words · ${s.sc} sentences · ${s.lk.length} linking words · Time used: ${fmt(res.secs)}</p><p class="mute">This is a self-review of form only. It does not judge grammar, ideas, or quality, and it is not a WIDA score or a proficiency level. Ask a teacher for feedback on your writing.</p></section>`;
+    const c=$('#sumcard',el); c.scrollIntoView({block:'start'}); c.focus({preventScroll:true});
+    o.onDone(res,$('#act',el));
+  }
+  $('#fin',el).addEventListener('click',finish);
+}
+
+/* ================= FULL TEST ================= */
+const STAGES=['reading','listening','speaking','writing'];
+function newTest(){
+  const lv=P.level, sp=SPEAK[lv];
+  return {level:lv,stage:0,started:Date.now(),res:{},logged:false,items:{
+    reading:pick(READING[lv].map(p=>p.id),2),
+    listening:pick(LISTEN[lv].map(c=>c.id),3),
+    speaking:[...pick(sp.filter(p=>p.type==='repeat'),1),...pick(sp.filter(p=>p.type==='respond'),2)].map(p=>p.id),
+    writing:pick(WRITE[lv].map(x=>x.id),1)[0]}};
+}
+VIEWS.test=el=>{
+  const T=P.test; let top='';
+  if(T&&T.stage<4) top=`<section class="card"><h3>${L('resume')}</h3><p>You finished ${T.stage} of 4 parts. Part ${T.stage+1} (${KIND[STAGES[T.stage]]}) is next. Level: ${T.level==='b'?'Beginner-Intermediate':'Advanced'}.</p><button class="btn primary" data-act="resume">${L('resume')}</button></section>`;
+  else if(T) top=`<section class="card"><h3>Your last test is finished</h3><button class="btn primary" data-act="results">See results</button></section>`;
+  el.innerHTML=`<h2>${L('fullTest')}</h2>${lvlBadge()}${top}
+   <section class="card"><h3>What is in the test</h3><ol class="steps"><li>Reading: 2 passages with a timer.</li><li>Listening: 3 audio clips.</li><li>Speaking: 3 tasks.</li><li>Writing: 1 prompt with a timer.</li></ol>
+   <p>Your progress is saved after each part, so you can stop and continue later. The results page shows practice numbers only. They are <strong>not</strong> WIDA scores or proficiency levels.</p>
+   <p class="mute">The level cannot be changed during the test.</p>
+   <button class="btn ${T&&T.stage<4?'':'primary'}" data-act="newtest">${T?'Start a new test':L('start')}</button></section>`;
+};
+VIEWS.testRun=el=>{
+  const T=P.test; if(!T){ go('test'); return; }
+  if(T.stage>=4){ go('testResults'); return; }
+  if(T.level!==P.level){ P.level=T.level; save(); syncLevel(); }
+  const st=T.stage, dom=STAGES[st];
+  const steps=STAGES.map((d,i)=>`<li${i===st?' aria-current="step"':''}>${i<st?'✓ ':''}${KIND[d]}${i===st?' (now)':''}</li>`).join('');
+  el.innerHTML=`<h2>${L('fullTest')}: Part ${st+1} of 4</h2>${lvlBadge()}<ol class="steps">${steps}</ol><div id="run"></div>`;
+  const done=(res,act)=>{
+    T.res[dom]=res; T.stage=st+1; save();
+    act.innerHTML=st<3?`<button class="btn primary" data-act="resume">Continue to ${KIND[STAGES[st+1]]}</button>`:`<button class="btn primary" data-act="results">See results</button>`;
+  };
+  const run=$('#run',el);
+  if(dom==='reading'){ const list=T.items.reading.map(id=>R_BY[id]); const nq=list.reduce((s,p)=>s+p.qs.length,0); runReading(run,list,{minutes:Math.round(nq*(T.level==='b'?1.5:1.75)),auto:true,onDone:done}); }
+  else if(dom==='listening'){ runListening(run,T.items.listening.map(id=>L_BY[id]),{onDone:done}); }
+  else if(dom==='speaking'){ runSpeaking(run,T.items.speaking.map(id=>S_BY[id]),{onDone:done}); }
+  else { runWriting(run,W_BY[T.items.writing],{test:true,auto:true,onDone:done}); }
+};
+VIEWS.testResults=el=>{
+  const T=P.test; if(!T||T.stage<4){ go('test'); return; }
+  const r=T.res; const pct=x=>x&&x.total?Math.round(x.score/x.total*100):0;
+  if(!T.logged){ T.logged=true; addHist({kind:'test',label:'Full practice test',score:r.reading.score+r.listening.score,total:r.reading.total+r.listening.total,note:'Reading + listening accuracy; speaking and writing notes on results page'}); }
+  const sk={}; [r.reading,r.listening].forEach(x=>Object.entries(x.bySkill||{}).forEach(([k,v])=>{ sk[k]=sk[k]||[0,0]; sk[k][0]+=v[0]; sk[k][1]+=v[1]; }));
+  const weak=Object.entries(sk).filter(([k,v])=>v[1]>0&&v[0]/v[1]<0.6).map(([k])=>k);
+  const bar=p=>`<div class="meter" aria-hidden="true"><i style="width:${p}%"></i></div>`;
+  const sp=r.speaking, wr=r.writing;
+  el.innerHTML=`<h2>Test results</h2>${lvlBadge()}
+   <p class="rough" role="note">These are practice numbers from original items. They are not WIDA scores, scale scores, or proficiency levels.</p>
+   <section class="card"><h3>Reading</h3><p class="bignum">${r.reading.score} / ${r.reading.total} <span>(${pct(r.reading)}%)</span></p>${bar(pct(r.reading))}<p class="mute">Time used: ${fmt(r.reading.secs||0)}</p></section>
+   <section class="card"><h3>Listening</h3><p class="bignum">${r.listening.score} / ${r.listening.total} <span>(${pct(r.listening)}%)</span></p>${bar(pct(r.listening))}</section>
+   <section class="card"><h3>Speaking</h3><p>Tasks checked: ${sp.score} of ${sp.total}.</p><ul class="plain">${(sp.tasks||[]).map(t=>`<li>${esc(t.note)}</li>`).join('')||'<li>No task was checked.</li>'}</ul><p class="mute">Rough practice feedback only. Not a pronunciation score.</p></section>
+   <section class="card"><h3>Writing</h3><p class="bignum">${wr.score} / 6 <span>checklist items met</span></p>${bar(Math.round(wr.score/6*100))}<p>${wr.words} words · ${wr.sentences} sentences. This checks form only. Ask a teacher to read your writing.</p></section>
+   <section class="card"><h3>What to practice next</h3>${weak.length?`<p>Reading and listening skills to review: ${weak.map(esc).join(', ')}.</p>`:'<p>No reading or listening skill fell below 60%. Try the other level or a new test.</p>'}</section>
+   <div class="row"><button class="btn primary" data-act="newtest">Start a new test</button><button class="btn" data-go="home">${L('toHome')}</button></div>`;
+};
+
+/* ================= VOCABULARY ================= */
+const vsel=()=>P.vs||{g:'all',set:'level'};
+function vocabPool(){ const v=vsel(); return WORDS.filter(w=>(v.g==='all'||w.g===v.g)&&(v.set==='all'||w.l===(P.level==='b'?1:2))); }
+VIEWS.vocab=el=>{
+  const v=vsel(); const known=Object.keys(P.known).length;
+  el.innerHTML=`<h2>${L('vocab')}</h2>${lvlBadge()}
+   <section class="card"><div class="grid2">
+    <label for="vg" class="lbl" style="margin:0">${L('group')}</label>
+    <select id="vg" class="sel"><option value="all">All groups</option>${GROUPS.map(g=>`<option value="${g[0]}" data-k="${g[0]}">${g[1]}</option>`).join('')}</select>
+    <label for="vset" class="lbl" style="margin:0">Word set</label>
+    <select id="vset" class="sel"><option value="level">Words for my level</option><option value="all">Both levels</option></select>
+   </div><p id="vcount" class="mute"></p>
+   <div class="row"><button class="btn primary" data-go="flash">${L('flash')}</button><button class="btn" data-go="quiz">${L('quiz')}</button></div></section>
+   <p class="mute">Words marked “I know it”: ${known} of ${WORDS.length}. Words come in two kinds: subject words (science, social studies, math, language arts) and general academic words that appear in every subject.</p>`;
+  $('#vg',el).value=v.g; $('#vset',el).value=v.set;
+  const upd=()=>{ P.vs={g:$('#vg',el).value,set:$('#vset',el).value}; save(); $('#vcount',el).textContent=vocabPool().length+' words selected.'; };
+  $('#vg',el).addEventListener('change',upd); $('#vset',el).addEventListener('change',upd); upd();
+};
+VIEWS.flash=el=>{
+  const pool=vocabPool(); if(!pool.length){ go('vocab'); return; }
+  const deck=shuffle(pool); let i=0, flip=false, kc=0, lc=0;
+  el.innerHTML=`<h2>${L('flash')}</h2>${lvlBadge()}<div id="fc"></div>`;
+  const box=$('#fc',el);
+  function draw(){
+    if(i>=deck.length){
+      addHist({kind:'vocab',label:'Flashcards',score:kc,total:deck.length,note:`${kc} known, ${lc} still learning`});
+      box.innerHTML=`<section class="card"><h3>Deck finished</h3><p class="bignum">${kc} / ${deck.length} <span>marked “I know it”</span></p><div class="row"><button class="btn primary" data-go="flash">${L('again')}</button><button class="btn" data-go="vocab">${L('prev')}</button></div></section>`; fillTr(box); return;
+    }
+    const w=deck[i];
+    const card=flip
+     ?`<button class="fcard back" id="card" aria-label="Card back. Press to flip."><span class="fw">${esc(w.w)}</span><span>${esc(w.def)}</span><em>“${esc(w.ex)}”</em><span class="tr" data-w="${esc(w.w)}" hidden></span></button>`
+     :`<button class="fcard" id="card" aria-label="Card front. Press to flip."><span class="fw">${esc(w.w)}</span><span class="mute">${esc(w.pos)} · ${esc((GROUPS.find(g=>g[0]===w.g)||[])[1])}</span><span class="hint">${L('flip')}</span></button>`;
+    box.innerHTML=`<p class="mute" role="status">Card ${i+1} of ${deck.length} · ${kc} known so far</p><div aria-live="polite">${card}</div>
+     <div class="row"><button class="btn" id="hear">Hear the word</button><button class="btn" id="fl">${L('flip')}</button></div>
+     <div class="row"><button class="btn" id="lrn">${L('learning')}</button><button class="btn primary" id="kn">${L('know')}</button></div>
+     <div class="row"><button class="btn" id="pv" ${i===0?'disabled':''}>${L('prev')}</button><button class="btn" id="nx">${L('next')}</button></div>`;
+    fillTr(box);
+    $('#card',box).focus({preventScroll:true});
+  }
+  box.addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b)return; const w=deck[i];
+    if(b.id==='card'||b.id==='fl'){ flip=!flip; draw(); }
+    else if(b.id==='kn'){ P.known[w.w]=1; save(); kc++; i++; flip=false; draw(); }
+    else if(b.id==='lrn'){ delete P.known[w.w]; save(); lc++; i++; flip=false; draw(); }
+    else if(b.id==='nx'){ i++; flip=false; draw(); }
+    else if(b.id==='pv'&&i>0){ i--; flip=false; draw(); }
+    else if(b.id==='hear'&&TTS.ok){ TTS.play([{s:0,t:w.w+'.'}],{rate:0.8}); }
+  });
+  draw();
+};
+function buildQuiz(pool,n){
+  const words=shuffle(pool).slice(0,n);
+  return words.map((w,k)=>{
+    const others=shuffle(WORDS.filter(x=>x.w!==w.w)).sort((a,b)=>((b.pos===w.pos)+(b.g===w.g))-((a.pos===w.pos)+(a.g===w.g)));
+    const d=others.slice(0,3);
+    if(k%2===0){
+      return {w,type:'def',q:`What does “${w.w}” mean?`,opts:shuffle([{t:w.def,c:true},...d.map(x=>({t:x.def,c:false}))])};
+    }
+    const sent=w.ex.replace(new RegExp('\\b'+w.w+'\\w*','i'),'_____');
+    return {w,type:'cloze',q:'Choose the word that best completes the sentence: “'+sent+'”',opts:shuffle([{t:w.w,c:true},...d.map(x=>({t:x.w,c:false}))])};
+  });
+}
+VIEWS.quiz=el=>{
+  const pool=vocabPool(); if(pool.length<4){ go('vocab'); return; }
+  const qs=buildQuiz(pool,Math.min(10,pool.length)); let i=0, score=0; const wrong=[];
+  el.innerHTML=`<h2>${L('quiz')}</h2>${lvlBadge()}<div id="qz"></div>`;
+  const box=$('#qz',el);
+  function draw(){
+    if(i>=qs.length){
+      addHist({kind:'vocab',label:'Vocabulary quiz',score,total:qs.length});
+      box.innerHTML=`<section class="card"><h3>Quiz finished</h3><p class="bignum">${score} / ${qs.length} <span>(${Math.round(score/qs.length*100)}%)</span></p><div class="meter" aria-hidden="true"><i style="width:${Math.round(score/qs.length*100)}%"></i></div>${wrong.length?`<h4>Words to review</h4><ul class="plain">${wrong.map(w=>`<li><strong>${esc(w.w)}</strong>: ${esc(w.def)} <span class="tr" data-w="${esc(w.w)}" hidden></span></li>`).join('')}</ul>`:'<p>No mistakes. Well done.</p>'}<div class="row"><button class="btn primary" data-go="quiz">${L('again')}</button><button class="btn" data-go="vocab">${L('prev')}</button></div></section>`;
+      fillTr(box); return;
+    }
+    const q=qs[i];
+    box.innerHTML=`<section class="card"><p class="mute" role="status">Question ${i+1} of ${qs.length}</p><h3 id="qh" tabindex="-1">${esc(q.q)}</h3>
+     ${q.opts.map((o,k)=>`<button class="vopt" data-o="${k}"><span class="bub" aria-hidden="true">${'ABCD'[k]}</span><span class="otext">${esc(o.t)}</span></button>`).join('')}
+     <p class="fb" id="vfb" role="status"></p><div id="vmore"></div></section>`;
+    $('#qh',box).focus({preventScroll:true});
+  }
+  box.addEventListener('click',e=>{
+    const b=e.target.closest('[data-o]'); if(b&&!b.disabled){
+      const q=qs[i], pick=+b.dataset.o, right=q.opts.findIndex(o=>o.c);
+      $$('.vopt',box).forEach((x,k)=>{ x.disabled=true; if(k===right){ x.classList.add('right'); x.insertAdjacentHTML('beforeend','<span class="badge">✓ Correct answer</span>'); } else if(k===pick){ x.classList.add('wrongpick'); x.insertAdjacentHTML('beforeend','<span class="badge">✗ Your answer</span>'); } });
+      const ok=pick===right; if(ok){ score++; P.known[q.w.w]=1; save(); } else wrong.push(q.w);
+      $('#vfb',box).textContent=ok?'✓ Correct':'✗ Not correct';
+      $('#vmore',box).innerHTML=`<p><strong>${esc(q.w.w)}</strong> (${esc(q.w.pos)}): ${esc(q.w.def)}</p><p><span class="tr" data-w="${esc(q.w.w)}" hidden></span></p><div class="row"><button class="btn primary" id="qn">${i+1>=qs.length?L('finish'):L('next')}</button></div>`;
+      fillTr(box); $('#qn',box).focus(); return;
+    }
+    if(e.target.closest('#qn')){ i++; draw(); }
+  });
+  draw();
+};
+
+/* ================= TUTORIAL ================= */
+VIEWS.tutorial=el=>{
+  const steps=[
+   {t:'What this app is',h:()=>`<p>This is a practice tool for English learners in grades 9–12. It has reading, listening, speaking, and writing practice, a vocabulary trainer, and a full practice test.</p><p><strong>It is independent. It is not an official WIDA product, and WIDA did not make or check it.</strong> Every passage, audio script, question, and prompt was written for this app. Results are practice numbers, not official scores.</p>`},
+   {t:'Pick your level',h:()=>`<p>Use the two buttons at the top of the page.</p><div class="mock" aria-hidden="true"><span class="chip ok">● Beginner-Intermediate</span> <span class="chip">○ Advanced</span></div><p>Beginner-Intermediate uses shorter texts and common words. Advanced uses longer texts and academic language. Your choice is saved.</p>`},
+   {t:'Reading practice',h:()=>`<p>Read a passage, answer multiple-choice questions, and watch the timer. After you submit, you see your score, the right answers, and a score for each skill. Try one sample question:</p>
+     <div class="mock"><p>Maya waters the garden every morning because plants need water to grow.</p><div id="tq"></div></div>`,
+    bind:el=>{ const pq=prepQ({k:'Detail',q:'Why does Maya water the garden?',o:['Plants need water to grow.','She likes the morning.','The garden is new.','It is raining.']}); const box=$('#tq',el); box.innerHTML=qHTML('tut1',1,pq)+`<div class="row"><button class="btn" id="tchk">Check</button></div>`; $('#tchk',box).onclick=()=>{ const r=gradeSet(box,[{name:'tut1',pq}]); $('#tchk',box).disabled=true; }; }},
+   {t:'Listening practice',h:()=>`<p>The app reads the script with your browser's voice. You can play it once and replay it once. The script stays hidden until you finish. There is no background music. Test your sound:</p><div class="row"><button class="btn primary" id="tt">Play a sample sentence</button><span class="mute" id="tts" role="status"></span></div>`,
+    bind:el=>{ $('#tt',el).onclick=()=>{ if(!TTS.ok){ $('#tts',el).textContent='Audio playback is not available in this browser.'; return; } TTS.play([{s:0,t:'This is a sample sentence. Can you hear it clearly?'}],{rate:0.9,onStart(){$('#tts',el).textContent='Playing…';},onEnd(){$('#tts',el).textContent='Done.';},onFail(){$('#tts',el).textContent='Audio did not start. Check your volume.';}}); }; }},
+   {t:'Speaking practice',h:()=>`<p>You see a task, press the record button, and speak. Your browser turns your speech into text. You can edit the text, then press Check.</p><div class="mock" aria-hidden="true"><p><strong>Match to the target sentence: 83%</strong></p><p>Missed words: <span class="chip">o'clock</span></p><p>Length: you said 11 words; the target has 12 words.</p></div><p class="rough"><strong>The feedback is rough. It compares words only. It is not a pronunciation score.</strong></p><p>If your browser cannot record or blocks the microphone, say your answer aloud and type it instead.</p>`},
+   {t:'Writing practice',h:()=>`<p>You type an answer with a timer and a live word count. A checklist shows if you reached the length, wrote enough sentences, and used linking words. You tick the boxes for your topic sentence, closing sentence, and proofreading.</p><div class="mock" aria-hidden="true"><p>Not yet · Length: 23 of 40 words</p><p>Done ✓ · Linking words: because, for example</p><p>☐ My first sentence tells the main idea.</p></div>`},
+   {t:'Full test, vocabulary, and saving',h:()=>`<p>The full practice test runs all four parts in order and ends with a results page. In Vocabulary, use flashcards and multiple-choice quizzes for subject words and general academic words.</p><p>Progress saves in this browser. To move to another device, copy your progress code on the Progress page and paste it on the other device.</p>`},
+   {t:'Translate help',h:()=>`<p>Press <strong>Translate help</strong> at the top of the page to see Korean, Vietnamese, Spanish, or Japanese under instructions, buttons, and vocabulary meanings. Press it again to hide them.</p><p>Passages, audio, and questions stay in English on purpose, so the practice is real. The translations are drafts and need review by a native speaker.</p>`}
+  ];
+  let i=0;
+  function draw(first){
+    const s=steps[i];
+    el.innerHTML=`<h2>${L('tutorial')}</h2><p class="mute" role="status">Step ${i+1} of ${steps.length}</p><div class="meter" aria-hidden="true"><i style="width:${Math.round((i+1)/steps.length*100)}%"></i></div>
+     <section class="card"><h3 id="tt3" tabindex="-1">${s.t}</h3>${s.h()}</section>
+     <div class="row"><button class="btn" id="tp" ${i===0?'disabled':''}>${L('prev')}</button>${i<steps.length-1?`<button class="btn primary" id="tn">${L('next')}</button>`:`<button class="btn primary" data-go="home">${L('toHome')}</button>`}</div>`;
+    fillTr(el); if(s.bind)s.bind(el);
+    $('#tp',el).onclick=()=>{ i--; draw(); };
+    const tn=$('#tn',el); if(tn) tn.onclick=()=>{ i++; draw(); };
+    if(!first){ $('#tt3',el).focus(); }
+  }
+  draw(true);
+};
+
+/* ================= PROGRESS ================= */
+function enc(o){ return btoa(unescape(encodeURIComponent(JSON.stringify(o)))); }
+function dec(s){ return JSON.parse(decodeURIComponent(escape(atob(s.trim())))); }
+VIEWS.progress=el=>{
+  const rows=['reading','listening','speaking','writing','test','vocab'].map(k=>{
+    const h=P.hist.filter(x=>x.kind===k); const sc=h.filter(x=>x.total);
+    const best=sc.length?Math.max(...sc.map(x=>Math.round(x.score/x.total*100)))+'%':'–';
+    const last=h[0]?(h[0].total?`${h[0].score}/${h[0].total}`:esc(h[0].note||'done')):'–';
+    return `<tr><th scope="row">${KIND[k]}</th><td>${h.length}</td><td>${last}</td><td>${best}</td></tr>`;
+  }).join('');
+  const recent=P.hist.slice(0,12).map(x=>`<li>${new Date(x.t).toLocaleDateString()} · ${KIND[x.kind]} · ${x.level==='b'?'Beginner-Intermediate':'Advanced'} · ${esc(x.label||'')} · ${x.total?`${x.score}/${x.total}`:esc(x.note||'')}</li>`).join('')||'<li>Nothing yet. Try a Reading passage first.</li>';
+  el.innerHTML=`<h2>${L('progress')}</h2>
+   <p>${L('saveNote')} ${storageOK?'':'<strong>Saving is not available in this browser, so use the progress code below.</strong>'}</p>
+   <div class="tw"><table class="t"><thead><tr><th scope="col">Activity</th><th scope="col">Tries</th><th scope="col">Last</th><th scope="col">Best</th></tr></thead><tbody>${rows}</tbody></table></div>
+   <p>Vocabulary words marked “I know it”: <strong>${Object.keys(P.known).length}</strong> of ${WORDS.length}. Saved writing drafts: <strong>${Object.keys(P.drafts).length}</strong>.</p>
+   <h3>Recent activity</h3><ul class="plain">${recent}</ul>
+   <section class="card"><h3>Move or back up your progress</h3><p>Copy the code, then paste it on another device.</p>
+    <label class="lbl" for="pc">Progress code</label><textarea id="pc" class="ta short" readonly spellcheck="false"></textarea>
+    <div class="row"><button class="btn" id="cp">${L('copyCode')}</button></div><p class="mute" id="cps" role="status"></p>
+    <label class="lbl" for="pl">Paste a code here</label><textarea id="pl" class="ta short" spellcheck="false"></textarea>
+    <div class="row"><button class="btn" id="ld">${L('loadCode')}</button></div><p class="mute" id="lds" role="status"></p></section>
+   <section class="card"><h3>${L('reset')}</h3><div class="row"><button class="btn" id="er">${L('reset')}</button></div><p class="mute" id="ers" role="status"></p></section>`;
+  const pc=$('#pc',el); pc.value=enc({v:1,level:P.level,hist:P.hist,known:P.known,drafts:P.drafts,test:P.test});
+  $('#cp',el).onclick=async()=>{ pc.select(); let ok=false; try{ await navigator.clipboard.writeText(pc.value); ok=true; }catch(e){} $('#cps',el).textContent=ok?'Copied.':'Select the code and copy it yourself (Ctrl+C or Cmd+C).'; };
+  $('#ld',el).onclick=()=>{
+    try{ const o=dec($('#pl',el).value); if(!o||!Array.isArray(o.hist)) throw 0; P=Object.assign(defaults(),{lang:P.lang,level:o.level==='a'?'a':'b',hist:o.hist.slice(0,300),known:o.known||{},drafts:o.drafts||{},test:o.test||null}); save(); syncLevel(); $('#lds',el).textContent='Progress loaded.'; setTimeout(()=>go('progress'),700); }
+    catch(e){ $('#lds',el).textContent='That code did not work. Copy the whole code again and paste it.'; }
+  };
+  let armed=false;
+  $('#er',el).onclick=()=>{ if(!armed){ armed=true; $('#ers',el).textContent='This deletes all results, drafts, and saved tests on this device. Press the button again to confirm.'; return; } P=Object.assign(defaults(),{lang:P.lang,level:P.level}); save(); go('progress'); };
+};
+
+/* ================= actions and global events ================= */
+const ACT={
+  newtest(){ P.test=newTest(); save(); go('testRun'); },
+  resume(){ go('testRun'); },
+  results(){ go('testResults'); }
+};
+document.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]'); if(g&&!g.disabled){ e.preventDefault(); go(g.dataset.go,g.dataset.arg===''?undefined:g.dataset.arg); return; }
+  const a=e.target.closest('[data-act]'); if(a&&ACT[a.dataset.act]){ e.preventDefault(); ACT[a.dataset.act](); }
+});
+
+/* ================= shell ================= */
+function buildShell(){
+  $('#disc').innerHTML=`<strong>${L('disc')}</strong> <span class="en">Not made, checked, or approved by WIDA. All questions are original.</span>`;
+  $('#brand').innerHTML=L('title'); $('#subt').innerHTML=L('sub');
+  $('#nav').innerHTML=[['home','home'],['reading','reading'],['listening','listening'],['speaking','speaking'],['writing','writing'],['test','fullTest'],['vocab','vocab'],['tutorial','tutorial'],['progress','progress']].map(n=>`<li><button class="navb" data-go="${n[0]}">${L(n[1])}</button></li>`).join('');
+  $('#lg').innerHTML=L('level');
+  $('#lb').innerHTML=L('beginner'); $('#la').innerHTML=L('advanced');
+  $('#langLbl').innerHTML=L('language'); $('#trNote').innerHTML=L('draft');
+  $('#trLang').innerHTML=LANGS.map(l=>`<option value="${l[0]}">${l[1]}</option>`).join(''); $('#trLang').value=P.lang;
+  setTrBtn();
+}
+function setTrBtn(){
+  const b=$('#trBtn'); b.setAttribute('aria-pressed',S.help?'true':'false'); b.innerHTML=S.help?L('hideTr'):L('translate');
+  $('#langBox').hidden=!S.help; $('#trNote').hidden=!S.help; fillTr();
+}
+$('#trBtn').addEventListener('click',()=>{ S.help=!S.help; setTrBtn(); });
+$('#trLang').addEventListener('change',e=>{ P.lang=e.target.value; save(); fillTr(); });
+$$('input[name=lvl]').forEach(r=>r.addEventListener('change',e=>{
+  P.level=e.target.value; save();
+  if(S.view!=='home'&&S.view!=='tutorial'&&S.view!=='progress'&&S.view!=='vocab') go(ROOT[S.view]||S.view); else if(S.view==='vocab'||S.view==='flash'||S.view==='quiz') go('vocab'); else render();
+}));
+buildShell(); syncLevel(); go('home');
+})();
+</script></body></html>
